@@ -28,6 +28,7 @@ import Reviews from "./pages/Reviews";
 import AboutUs from "./pages/About";
 import CommunityDetails from "./pages/CommunityDetails";
 import GalleryAdmin from "./admin/pages/Gallery";
+import Gallery from "./pages/Gallerypage";
 
 function App() {
   const location = useLocation();
@@ -52,6 +53,7 @@ function App() {
         <Route path="/sea-dunes-beach-front" element={<SeaDunesBeachFront />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/community/:slug" element={<CommunityDetails />} />
+        <Route path="/gallery" element={<Gallery />} />
         
           
 

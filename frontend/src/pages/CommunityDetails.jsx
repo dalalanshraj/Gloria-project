@@ -77,14 +77,14 @@ export default function CommunityDetails() {
     <>
       {/* HERO */}
       <section
-        className="relative h-[60vh] bg-cover bg-center flex items-center justify-center text-white"
+        className="relative h-[60vh] md:h-[70vh] bg-cover bg-center flex items-center justify-center text-white"
         style={{
           backgroundImage: `url(${heroImage})`,
         }}
       >
         <div className="absolute inset-0 bg-black/50"></div>
 
-        <h1 className="relative text-5xl md:text-6xl font-extrabold capitalize text-center px-4">
+        <h1 className="relative text-5xl md:text-6xl font-extrabold capitalize text-center px-4 mt-15">
           {slug.replace(/-/g, " ")}
         </h1>
       </section>

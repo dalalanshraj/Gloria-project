@@ -52,8 +52,7 @@ export default function Reviews() {
   };
 
   const image1 =
-    images[0] ||
-    "https://images.unsplash.com/photo-1505691938895-1758d7feb511";
+    images[0] || "https://images.unsplash.com/photo-1505691938895-1758d7feb511";
 
   // ==============================
   // UI
@@ -61,43 +60,37 @@ export default function Reviews() {
   return (
     <>
       {/* HERO */}
-      <section className="relative h-[30vh] md:h-[50vh] flex items-center justify-center text-white">
+      <section className="relative h-[60vh] md:h-[70vh] flex items-center justify-center text-white">
         <div
           className="absolute inset-0 bg-fixed bg-cover bg-center"
           style={{ backgroundImage: `url(${image1})` }}
         />
         <div className="absolute inset-0 bg-black/60" />
 
-        <h1 className="relative text-3xl md:text-6xl font-bold">
+        <h1 className="relative text-3xl md:text-6xl font-bold mt-15">
           Reviews
         </h1>
       </section>
 
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-8">
-
         {/* TOP BAR */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-
           {/* PAGINATION */}
           <div className="flex gap-2 flex-wrap">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-              (num) => (
-                <button
-                  key={num}
-                  onClick={() => {
-                    setCurrentPage(num);
-                    fetchReviews(num);
-                  }}
-                  className={`px-3 py-1 rounded border ${
-                    currentPage === num
-                      ? "bg-yellow-500 text-white"
-                      : "bg-white"
-                  }`}
-                >
-                  {num}
-                </button>
-              )
-            )}
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+              <button
+                key={num}
+                onClick={() => {
+                  setCurrentPage(num);
+                  fetchReviews(num);
+                }}
+                className={`px-3 py-1 rounded border ${
+                  currentPage === num ? "bg-yellow-500 text-white" : "bg-white"
+                }`}
+              >
+                {num}
+              </button>
+            ))}
           </div>
 
           {/* BUTTON */}
@@ -117,10 +110,9 @@ export default function Reviews() {
               className="bg-white rounded-xl shadow p-4 hover:shadow-lg transition"
             >
               <div className="flex flex-col md:flex-row gap-4">
-
                 {/* IMAGE */}
                 <img
-                  src={getImageUrl(item.property.image)}
+                  src={getImageUrl(item.property?.image)}
                   className="w-full md:w-40 h-48 md:h-28 object-cover rounded-lg"
                   alt=""
                 />
@@ -138,14 +130,11 @@ export default function Reviews() {
                   <p className="text-blue-500 text-sm mt-2">
                     {item.user} •{" "}
                     {item.stayDate
-                      ? new Date(item.stayDate).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          }
-                        )
+                      ? new Date(item.stayDate).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })
                       : "N/A"}
                   </p>
                 </div>
@@ -162,12 +151,12 @@ export default function Reviews() {
                     </div>
                   </div>
 
-                  <Link
-                    to={`/listing/${item.listingId}`}
-                    className="bg-green-500 text-white px-4 py-2 rounded text-sm md:text-base whitespace-nowrap"
-                  >
-                    READ REVIEWS
-                  </Link>
+               <Link
+  to={`/${item.listingId}`}
+  className="bg-green-500 text-white px-4 py-2 rounded text-sm md:text-base whitespace-nowrap"
+>
+  READ REVIEWS
+</Link>
                 </div>
               </div>
             </div>
@@ -176,9 +165,7 @@ export default function Reviews() {
       </div>
 
       {/* MODAL */}
-      {showModal && (
-        <ReviewModal onClose={() => setShowModal(false)} />
-      )}
+      {showModal && <ReviewModal onClose={() => setShowModal(false)} />}
     </>
   );
 }

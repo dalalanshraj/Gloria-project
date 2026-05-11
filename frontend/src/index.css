@@ -102,3 +102,6 @@ select::-webkit-scrollbar-thumb:hover {
 button{
   cursor: pointer;
 }
+Link{
+  cursor: pointer;
+}

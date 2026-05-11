@@ -9,6 +9,7 @@ const Navbar = () => {
   const location = useLocation();
 
   const [isScrolled, setIsScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [mobileDropdown, setMobileDropdown] = useState(null);
@@ -27,6 +28,16 @@ const Navbar = () => {
     };
     fetchCommunities();
   }, []);
+
+  useEffect(() => {
+  const handleScroll = () => {
+    setScrolled(window.scrollY > 50);
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,7 +66,7 @@ const Navbar = () => {
     { name: "ABOUT" },
     { name: "COMMUNITIES" },
     { name: "PROPERTIES", link: "/properties" },
-    // { name: "SPECIALS", link: "/specials" },
+    { name: "GALLERY", link: "/gallery" },
     { name: "REVIEWS", link: "/reviews" },
   ];
 
@@ -103,23 +114,25 @@ const Navbar = () => {
         </div>
 
         {/* MOBILE MENU BUTTON */}
-        <button
-          onClick={() => setMobileMenu(!mobileMenu)}
-          className="md:hidden"
-        >
-          {mobileMenu ? <X size={28} /> : <Menu size={28} />}
-        </button>
+       <button
+  onClick={() => setMobileMenu(!mobileMenu)}
+  className={`md:hidden transition-colors duration-300 ${
+    scrolled ? "text-black" : "text-white"
+  }`}
+>
+  {mobileMenu ? <X size={28} /> : <Menu size={28} />}
+</button>
       </div>
 
       {/* DESKTOP NAV */}
-      <nav className="hidden md:flex justify-center bg-[#467FF7] text-white text-xl font-bold">
+      <nav className="hidden md:flex justify-center bg-[#467FF7] text-white text-xl font-bold cursor-pointer">
         {menuItems.map((item) => {
           const hasDropdown = dropdowns[item.name];
 
           return (
             <div
               key={item.name}
-              className="relative px-10 py-6"
+              className="relative px-10 py-6 cursor-pointer"
               onMouseEnter={() =>
                 hasDropdown && setOpenDropdown(item.name)
               }

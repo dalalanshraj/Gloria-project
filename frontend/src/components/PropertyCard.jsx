@@ -1,71 +1,160 @@
 import React from "react";
-import { Link, Links } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const PropertyCard = ({ listing }) => {
   if (!listing) return null;
 
-const getImageUrl = (path) => {
+  const getImageUrl = (path) => {
     if (!path || typeof path !== "string") return "";
 
     const base = import.meta.env.VITE_API_URL || "";
 
     if (path.startsWith("http")) return path;
 
-    return base.replace(/\/$/, "") + "/" + path.replace(/^\//, "");
+    return (
+      base.replace(/\/$/, "") + "/" + path.replace(/^\//, "")
+    );
   };
+
   // IMAGE
   const image =
     listing?.photos?.length > 0
-      ? getImageUrl(listing.photos[0]) // ✅ index 0 use karo
+      ? getImageUrl(listing.photos[0])
       : "https://via.placeholder.com/400x300?text=No+Image";
 
   // PRICE
   const originalPrice = listing?.rates?.[0]?.nightly || null;
-
   const dealPrice = listing?.deal?.discountedRate;
 
-  const price = dealPrice || originalPrice || "Call for price";
-
   return (
-    <Link to={`/${listing?._id}`}>
-      <div className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden relative">
+    <Link to={`/${listing?._id}`} className="block h-full">
+      <div
+        className="
+          bg-white
+          rounded-2xl
+          shadow-md
+          hover:shadow-2xl
+          transition-all
+          duration-300
+          overflow-hidden
+          relative
+          h-full
+          flex
+          flex-col
+          group
+        "
+      >
         {/* DEAL RIBBON */}
         {listing?.deal && (
-          <div className="absolute top-0 left-0 bg-orange-500 text-white text-xs px-6 py-1 -rotate-45 -translate-x-8 translate-y-4">
+          <div
+            className="
+              absolute
+              top-3
+              left-[-35px]
+              bg-orange-500
+              text-white
+              text-[10px]
+              sm:text-xs
+              font-semibold
+              px-10
+              py-1
+              rotate-[-45deg]
+              z-20
+              shadow-md
+            "
+          >
             DEAL
           </div>
         )}
 
         {/* IMAGE */}
-        <img
-          src={image}
-          alt={listing?.property?.title || "Property"}
-          className="w-full h-56 object-cover"
-        />
+        <div className="overflow-hidden">
+          <img
+            src={image}
+            alt={listing?.property?.title || "Property"}
+            className="
+              w-full
+              h-52
+              sm:h-56
+              md:h-60
+              object-cover
+              transition-transform
+              duration-500
+              group-hover:scale-105
+            "
+          />
+        </div>
 
         {/* CONTENT */}
-        <div className="p-4">
-          <h3 className="text-xl  mb-1">
+        <div
+          className="
+            p-4
+            sm:p-5
+            flex
+            flex-col
+            flex-grow
+          "
+        >
+          {/* TITLE */}
+          <h3
+            className="
+              text-lg
+              sm:text-xl
+              font-semibold
+              leading-snug
+              mb-2
+              line-clamp-2
+            "
+          >
             {listing?.property?.title ?? "Property"}
           </h3>
 
-          <p className="text-gray-600 text-sm mb-2">
+          {/* CATEGORY */}
+          <p
+            className="
+              text-gray-600
+              text-sm
+              sm:text-base
+              mb-3
+            "
+          >
             {listing?.property?.category ?? "Vacation Rental"}
           </p>
 
-          <div className="text-lg font-semibold">
+          {/* PRICE */}
+          <div className="mb-4">
             {listing?.deal ? (
-              <>
-                <span className="text-red-500 font-bold">
+              <div className="flex items-center flex-wrap gap-2">
+                <span
+                  className="
+                    text-red-500
+                    font-bold
+                    text-lg
+                    sm:text-xl
+                  "
+                >
                   ${listing.deal.discountedRate}
                 </span>
 
-                <span className="line-through text-gray-400 ml-2 text-sm">
+                <span
+                  className="
+                    line-through
+                    text-gray-400
+                    text-sm
+                  "
+                >
                   ${originalPrice}
                 </span>
-              </>
+              </div>
             ) : (
-              <span className="text-[#44AAD8] font-medium">
+              <span
+                className="
+                  text-[#44AAD8]
+                  font-semibold
+                  text-base
+                  sm:text-lg
+                "
+              >
                 {typeof originalPrice === "number"
                   ? `$${originalPrice} / Night`
                   : "Call for price"}
@@ -73,12 +162,32 @@ const getImageUrl = (path) => {
             )}
           </div>
 
-          <Link
-            to={`/${listing?._id}`}
-            className="inline-block mt-3 text-black font-semibold  p-2 rounded-2xl bg-[#F8F812] hover:bg-[#1B252F] hover:text-white transition "
-          >
-            View Details →
-          </Link>
+          {/* BUTTON */}
+          <div className="mt-auto">
+            <span
+              className="
+                inline-flex
+                items-center
+                justify-center
+                w-full
+                sm:w-auto
+                px-5
+                py-3
+                rounded-xl
+                bg-[#F8F812]
+                text-black
+                font-semibold
+                text-sm
+                sm:text-base
+                transition-all
+                duration-300
+                hover:bg-[#1B252F]
+                hover:text-white
+              "
+            >
+              View Details →
+            </span>
+          </div>
         </div>
       </div>
     </Link>

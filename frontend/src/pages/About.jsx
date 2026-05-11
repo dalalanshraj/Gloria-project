@@ -52,7 +52,7 @@ export default function About() {
         <div className="absolute inset-0 bg-black/60" />
 
         <div className="relative text-center px-4 sm:px-6">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mt-15">
             About Us
           </h1>
 

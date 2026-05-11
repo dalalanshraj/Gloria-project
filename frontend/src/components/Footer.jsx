@@ -44,16 +44,16 @@ const Footer = () => {
         {/* Right Section - Menu */}
         <div>
           <div className="flex items-center justify-between md:justify-start md:space-x-4 mb-4">
-            <h2 className="text-xl font-semibold">Location</h2>
+            {/* <h2 className="text-xl font-semibold">Location</h2> */}
             <Link to="/admin/login">
               <button className="bg-[#F8F812] text-black hover:bg-[#1B252F] hover:text-white text-sm font-medium px-4 py-2 rounded shadow flex items-center gap-2">
-                <MdEmail /> Login Admin
+                <MdEmail />Admin Login 
               </button>
             </Link>
           </div>
           <ul className="space-y-2">
            
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d860.4813506066332!2d-86.41851143180864!3d30.38147609842223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88915b54a4223add%3A0x3ea02b1911b455dd!2s3290%20Scenic%20Hwy%2098%20103%20B%2C%20Destin%2C%20FL%2032541%2C%20USA!5e0!3m2!1sen!2sin!4v1778510969964!5m2!1sen!2sin" width="440" height="150" ></iframe>
+            {/* <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d860.4813506066332!2d-86.41851143180864!3d30.38147609842223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88915b54a4223add%3A0x3ea02b1911b455dd!2s3290%20Scenic%20Hwy%2098%20103%20B%2C%20Destin%2C%20FL%2032541%2C%20USA!5e0!3m2!1sen!2sin!4v1778510969964!5m2!1sen!2sin" width="440" height="150" ></iframe> */}
           </ul>
         </div>
       </div>
