@@ -48,7 +48,7 @@ const Navbar = () => {
   }, []);
 
   const dropdowns = {
-    ABOUT: [{ name: "ABOUT", link: "/about-us" }],
+    // ABOUT: [{ name: "ABOUT", }],
     COMMUNITIES: [
   {
     name: "Crystal Sands",
@@ -63,7 +63,7 @@ const Navbar = () => {
 
   const menuItems = [
     { name: "HOME", link: "/" },
-    { name: "ABOUT" },
+    { name: "ABOUT" , link: "/about-us"  },
     { name: "COMMUNITIES" },
     { name: "PROPERTIES", link: "/properties" },
     { name: "GALLERY", link: "/gallery" },

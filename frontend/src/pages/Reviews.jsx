@@ -123,7 +123,7 @@ export default function Reviews() {
                     {item.property?.title || "Property"}
                   </h2>
 
-                  <p className="text-gray-600 mt-1 text-sm md:text-base line-clamp-2">
+                  <p className="text-gray-600 mt-1 text-sm md:text-base ">
                     {item.review}
                   </p>
 
@@ -151,12 +151,12 @@ export default function Reviews() {
                     </div>
                   </div>
 
-               <Link
+               {/* <Link
   to={`/${item.listingId}`}
   className="bg-green-500 text-white px-4 py-2 rounded text-sm md:text-base whitespace-nowrap"
 >
   READ REVIEWS
-</Link>
+</Link> */}
                 </div>
               </div>
             </div>
