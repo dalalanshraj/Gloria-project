@@ -32,21 +32,37 @@ import icalcalendarRoutes from "./routes/icalRoutes.js";
 const app = express();
 const PORT = process.env.PORT || 4002;
 const allowedOrigins = [
- "https://donnadaniel.mysawgrasspointe.com",   // ✅ ADD THIS
-  "https://www.donnadaniel.mysawgrasspointe.com", // optional
-  "http://localhost:5173"
+  "https://calypso401.com",
+  "https://www.calypso401.com",
+  "http://localhost:5174",
+  "http://localhost:5173",
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
+
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true
+
+    credentials: true,
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
 
