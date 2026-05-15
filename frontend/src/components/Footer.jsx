@@ -1,85 +1,154 @@
-import React from "react";
-import { FaFacebookF, FaTwitter } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
+import { useState, useEffect, useRef, use } from "react";
+import { FiMail, FiPhone } from "react-icons/fi";
+import api from "../api/axios.js";
 import { MdEmail } from "react-icons/md";
-import logoIme from "../assets/logo/LOGO5.png"; // Default logo
-import { Link } from "react-router-dom";
+import { Link, Links } from "react-router-dom";
+import logo from "../assets/logo/LOGO.png";
 
-const Footer = () => {
+export default function Footer({listingId}) {
+    const [contactNumber, setContactNumber] = useState("");
+    const [email , setEmail] = useState("");
+
+
+    useEffect(() => {
+  if (!listingId) return;
+
+  api
+    .get(`/listings/${listingId}`)
+    .then((res) => {
+
+      console.log(res.data);
+
+      // ✅ SAME AS ABOUT SECTION
+      setContactNumber(
+        res.data?.property?.altPhone || ""
+      );
+      setEmail(
+        res.data?.property?.altEmail || ""
+      )
+
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+}, [listingId]);
+
   return (
-    <footer className="bg-[#467FF7] text-white py-10 px-6 md:px-16">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-        {/* Left Section */}
-        <div>
-          <Link to={"/"} className="flex items-center space-x-3">
-            <img
-              src={logoIme}
-              alt="Logo"
-              className="w-89"
-            />
-           
-          </Link>
-        </div>
-
-        {/* Middle Section - Useful Links */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Useful Links</h2>
-          <ul className="space-y-2">
-             <li><a href="/" className="hover:text-gray-200">Home</a></li>
-            <li><a href="/about-us" className="hover:text-gray-200">About</a></li>
-            <li><a href="/properties" className="hover:text-gray-200">Properties</a></li>
-            <li><a href="/reviews" className="hover:text-gray-200">Reviews</a></li>
-            {/* <li>
-              <a href="#" className="hover:text-gray-200">
-                Privacy Policy
-              </a>
-            </li> */}
-            {/* <li>
-              <a href="#" className="hover:text-gray-200">
-                Contact
-              </a>
-            </li> */}
-          </ul>
-        </div>
-
-        {/* Right Section - Menu */}
-        <div>
-          <div className="flex items-center justify-between md:justify-start md:space-x-4 mb-4">
-            {/* <h2 className="text-xl font-semibold">Location</h2> */}
-            <Link to="/admin/login">
-              <button className="bg-[#F8F812] text-black hover:bg-[#1B252F] hover:text-white text-sm font-medium px-4 py-2 rounded shadow flex items-center gap-2">
-                <MdEmail />Admin Login 
-              </button>
-            </Link>
+    <footer className="bg-black text-white">
+      <div className="max-w-7xl mx-auto px-6 md:px-16 py-12">
+        {/* GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+          {/* BRAND */}
+          <div>
+            <div className=" w-30 mb-0">
+              <img src={logo} alt="" srcset="" />
+            </div>
+            <p className="text-white text-sm mt-6">
+             Enjoy a relaxing beachfront escape featuring two king suites, resort-style amenities, breathtaking ocean views, live music, fire pits, and complimentary beach chairs & umbrella.
+            </p>
           </div>
-          <ul className="space-y-2">
-           
-            {/* <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d860.4813506066332!2d-86.41851143180864!3d30.38147609842223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88915b54a4223add%3A0x3ea02b1911b455dd!2s3290%20Scenic%20Hwy%2098%20103%20B%2C%20Destin%2C%20FL%2032541%2C%20USA!5e0!3m2!1sen!2sin!4v1778510969964!5m2!1sen!2sin" width="440" height="150" ></iframe> */}
-          </ul>
-        </div>
-      </div>
 
-      {/* Bottom Section */}
-      <div className="mt-10 border-t border-white/30 pt-6 flex flex-col md:flex-row items-center justify-between">
-        <p className="text-sm text-center md:text-left">
-      © 2026 <a href="https://www.digifyamerica.com/">Digify America.</a>  All rights reserved.
-        </p>
-        <div className="flex space-x-4 mt-3 md:mt-0">
-          <a
-            href="#"
-            className="bg-white/20 hover:bg-white/30 p-3 rounded-full transition-all"
-          >
-            <FaFacebookF />
-          </a>
-          <a
-            href="#"
-            className="bg-white/20 hover:bg-white/30 p-3 rounded-full transition-all"
-          >
-            <FaTwitter />
-          </a>
+          {/* LINKS */}
+          <div>
+            <h3 className="font-semibold mb-4">Quick Links</h3>
+            <ul className="space-y-2 text-white text-sm">
+              <Link to={"/"}>
+                {" "}
+                <li className="hover:text-white cursor-pointer">Home</li>
+              </Link>
+              {/* <li className="hover:text-white cursor-pointer">Properties</li> */}
+              <Link to={"/about"}>
+                {" "}
+                <li className="hover:text-white cursor-pointer">About-us</li>
+              </Link>
+              <Link to={"/contect-us"}>
+                {" "}
+                <li className="hover:text-white cursor-pointer">Contact</li>
+              </Link>
+              <Link to={"/booking-Policy"}>
+                {" "}
+                {/* <span className="hover:text-white cursor-pointer">
+                  Booking Policy
+                </span> */}
+              </Link>
+            </ul>
+          </div>
+
+          {/* CONTACT */}
+          <div>
+            <h3 className="font-semibold mb-4">Contact</h3>
+            <div className="space-y-3 text-white text-sm">
+              <div className="flex items-center gap-2">
+                <FiPhone />
+                <span>{contactNumber}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <FiMail />
+                <span>{email}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* SOCIAL */}
+          <div>
+          <h3 className="font-semibold mb-4">Our Location</h3>
+             <iframe
+          className="w-full h-[250px] md:h-[220px]"
+         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d911.3272196319251!2d-85.87424523
+038668!3d30.21483089842738!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88938c41503ba
+a51%3A0x21a40f55ed13dc05!2s15902%20FL-30%2C%20Panama%20City%20Beach%2C%20FL%203
+2413%2C%20USA!5e1!3m2!1sen!2sin!4v1778705995783!5m2!1sen!2sin" width="600" height="450">
+         
+        </iframe>
+
+                           {/* <Link to="/admin/login">
+              <button className="bg-[#FFE8BE] hover:bg-[#2f9bad] text-sm font-medium px-4 py-2 rounded shadow flex items-center gap-2 mt-1">
+                <MdEmail />
+                Admin Login
+              </button>
+            </Link> */}
+
+            {/* <div className="flex gap-4">
+              <a
+                href="#"
+                className="p-2 bg-white/10 rounded-full hover:bg-blue-600 transition"
+              >
+                <FaFacebookF />
+              </a>
+
+              <a
+                href="#"
+                className="p-2 bg-white/10 rounded-full hover:bg-pink-500 transition"
+              >
+                <FaInstagram />
+              </a>
+
+              <a
+                href="#"
+                className="p-2 bg-white/10 rounded-full hover:bg-sky-500 transition"
+              >
+                <FaTwitter />
+              </a>
+            </div> */}
+          </div>
+        </div>
+
+        {/* BOTTOM */}
+        <div className="border-t border-white/10 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center text-white text-sm gap-4">
+          <p>
+            © {new Date().getFullYear()}{" "}
+            <a href="https://digifyamerica.com/">Digify America</a>. All rights
+            reserved.
+          </p>
+
+          <div className="flex gap-6">
+            {/* <span className="hover:text-white cursor-pointer">Terms</span> */}
+          </div>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

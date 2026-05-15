@@ -1,0 +1,556 @@
+import { useEffect, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import api from "../api/axios";
+import { IoLocation } from "react-icons/io5";
+import { MdEmail } from "react-icons/md";
+import { FaPhoneAlt } from "react-icons/fa";
+import emailjs from "@emailjs/browser";
+
+export default function Contact({listingId}) {
+  const [listing, setListing] = useState(null);
+  const [blockedDates, setBlockedDates] = useState([]);
+  const [selecting, setSelecting] = useState("checkIn");
+  const [images, setImages] = useState([]);
+  const [status, setStatus] = useState({
+    type: "", // success | error
+    message: "",
+  });
+
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    adults: "1",
+    kids: "0",
+    checkIn: null,
+    checkOut: null,
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+
+  // 🔥 FETCH BLOCKED DATES (ICAL API)
+  useEffect(() => {
+    api
+      .get("/calendar/blocked")
+      .then((res) => setBlockedDates(res.data))
+      .catch(console.log);
+  }, []);
+
+  // 🔥 CHECK BLOCKED
+  const isBlocked = (date) => {
+    return blockedDates.some((r) => {
+      const s = new Date(r.start);
+      const e = new Date(r.end);
+      return date >= s && date < e;
+    });
+  };
+  const isSameDay = (a, b) => a.toDateString() === b.toDateString();
+  // 🔥 DAY STYLE
+  const getDateType = (date) => {
+    // 🔥 turnover first
+    for (let i = 0; i < blockedDates.length; i++) {
+      const currentEnd = new Date(blockedDates[i].end);
+
+      for (let j = 0; j < blockedDates.length; j++) {
+        const nextStart = new Date(blockedDates[j].start);
+
+        const diff = (nextStart - currentEnd) / (1000 * 60 * 60 * 24);
+
+        if ((diff === 0 || diff === 1) && isSameDay(date, currentEnd)) {
+          return "turnover-day";
+        }
+      }
+    }
+
+    // normal
+    for (let r of blockedDates) {
+      const start = new Date(r.start);
+      const end = new Date(r.end);
+
+      if (isSameDay(date, start)) return "checkin-day";
+      if (isSameDay(date, end)) return "checkout-day";
+      if (date > start && date < end) return "blocked-day";
+    }
+
+    return "available-day";
+  };
+
+  useEffect(() => {
+    if (!status.message) return;
+
+    const timer = setTimeout(() => {
+      setStatus({ type: "", message: "" });
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [status]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!form.name || !form.email || !form.phone) {
+      alert("Please fill all details ⚠️");
+      return;
+    }
+
+    if (!form.checkIn || !form.checkOut) {
+      alert("Please select dates 📅");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // ✅ VALID PROPERTY ID (IMPORTANT)
+      const PROPERTY_ID = "6a04c24a43652c16fdde1a52"; // 🔥 replace this
+
+      // ✅ DB PAYLOAD (MATCH BACKEND)
+      const dbPayload = {
+        property: PROPERTY_ID, // ✅ FIXED
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        message: form.message || "",
+
+        Arrival: form.checkIn,
+        Departure: form.checkOut,
+
+        Adults: form.adults,
+        Kids: form.kids,
+      };
+
+      console.log("DB PAYLOAD:", dbPayload);
+
+      // ✅ SAVE TO DB
+      await api.post("/inquiries", dbPayload);
+
+      // ✅ EMAIL PAYLOAD
+      const emailPayload = {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        checkIn: form.checkIn.toDateString(),
+        checkOut: form.checkOut.toDateString(),
+        adults: form.adults,
+        kids: form.kids,
+        message: form.message,
+      };
+
+      // ✅ SEND EMAIL
+      await emailjs.send(
+        "service_x4xnlqz",
+        "template_oeep0hc",
+        emailPayload,
+        "CRTc5BG_9M1t3EjYj",
+      );
+
+      setStatus({
+        type: "success",
+        message: "Booking request sent successfully ✅",
+      });
+      // ✅ RESET FORM
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        adults: "1",
+        kids: "0",
+        checkIn: null,
+        checkOut: null,
+        message: "",
+      });
+    } catch (err) {
+      console.log("ERROR:", err.response?.data || err);
+      setStatus({
+        type: "error",
+        message: err.response?.data?.error || "Something went wrong ❌",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  const nights =
+    form.checkIn && form.checkOut
+      ? Math.ceil((form.checkOut - form.checkIn) / (1000 * 60 * 60 * 24))
+      : 0;
+
+      // 🔥 FETCH LISTING DATA
+useEffect(() => {
+  api
+    .get(`/listings/${listingId}`)
+    .then((res) => {
+
+      console.log("LISTING:", res.data);
+
+      setListing(res.data);
+
+    })
+    .catch(console.log);
+}, [listingId]);
+
+  const getImageUrl = (path) => {
+    if (!path || typeof path !== "string") return "";
+
+    const base = import.meta.env.VITE_API_URL || "";
+
+    if (path.startsWith("http")) return path;
+
+    return base.replace(/\/$/, "") + "/" + path.replace(/^\//, "");
+  };
+
+const image =
+    listing?.photos?.length > 0
+      ? getImageUrl(listing.photos[0])
+      : "https://via.placeholder.com/600x400";
+
+  // 👉 fallback images (important)
+  const image1 =
+    images[0] || "https://images.unsplash.com/photo-1505691938895-1758d7feb511";
+
+  const image2 =
+    images[1] || "https://images.unsplash.com/photo-1560185007-cde436f6a4d0";
+
+  const image3 = images[4];
+
+  const heroImage = images[1] || image1;
+
+  return (
+    <>
+      {/* 🔥 HERO */}
+      <section className="relative h-[50vh] flex items-center justify-center text-white">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: `url(${heroImage})`,
+          }}
+        />
+        <div className="absolute inset-0 bg-black/60" />
+
+        <div className="relative text-center px-6">
+          <h1 className="text-3xl md:text-5xl font-semibold mb-4">
+            Contact & Booking
+          </h1>
+        </div>
+      </section>
+
+      {/* 🔥 SECTION */}
+      <section className="py-10 md:py-16 px-4 sm:px-6 md:px-16 bg-white">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12 items-start">
+          {/* LEFT */}
+          <div className="w-full">
+            <h2 className="text-3xl md:text-5xl font-semibold text-gray-800">
+              Get in Touch
+            </h2>
+
+            <p className="text-gray-600 mb-6 text-center md:text-left">
+              Plan your stay with live availability calendar.
+            </p>
+
+           {/* CONTACT INFO */}
+<div className="space-y-4 text-gray-700 mb-6">
+
+  {/* LOCATION */}
+  <div className="flex items-center gap-3 justify-center md:justify-start">
+
+    <IoLocation
+      size={20}
+      className="text-red-500"
+    />
+
+    <p className="text-sm md:text-base">
+
+      {listing?.location?.address1 ||
+        listing?.property?.address ||
+        "Calypso 401 West"}
+
+    </p>
+  </div>
+
+  {/* EMAIL */}
+  <div className="flex items-center gap-3 justify-center md:justify-start">
+
+    <MdEmail
+      size={20}
+      className="text-green-500"
+    />
+
+    <p className="text-sm md:text-base break-all">
+
+      {listing?.property?.altEmail ||
+        "Email not available"}
+
+    </p>
+  </div>
+
+  {/* PHONE */}
+  <div className="flex items-center gap-3 justify-center md:justify-start">
+
+    <FaPhoneAlt
+      size={18}
+      className="text-gray-800"
+    />
+
+    <p className="text-sm md:text-base">
+
+      {listing?.property?.altPhone ||
+        "Phone not available"}
+
+    </p>
+  </div>
+
+</div>
+
+            {/* MAP */}
+            <div className="rounded-2xl overflow-hidden shadow-md w-full">
+              <iframe
+                className="w-full h-[250px] md:h-[350px]"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d911.3272196319251!2d-85.87424523
+038668!3d30.21483089842738!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88938c41503ba
+a51%3A0x21a40f55ed13dc05!2s15902%20FL-30%2C%20Panama%20City%20Beach%2C%20FL%203
+2413%2C%20USA!5e1!3m2!1sen!2sin!4v1778705995783!5m2!1sen!2sin"
+                width="600"
+                height="450"
+              ></iframe>
+            </div>
+          </div>
+
+          {/* RIGHT FORM */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              placeholder="Name"
+              className="w-full border p-3 rounded-lg"
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
+
+            <input
+              placeholder="Email"
+              className="w-full border p-3 rounded-lg"
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
+
+            <input
+              placeholder="Phone"
+              className="w-full border p-3 rounded-lg"
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            />
+            {/* Guests */}
+            <div className="flex gap-3">
+              {/* Adults */}
+              <div className="w-full">
+                <label className="text-sm text-gray-500">Adults</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={form.adults}
+                  className="w-full border p-3 rounded-lg"
+                  onChange={(e) =>
+                    setForm({ ...form, adults: Number(e.target.value) })
+                  }
+                />
+              </div>
+
+              {/* Kids */}
+              <div className="w-full">
+                <label className="text-sm text-gray-500">Kids</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.kids}
+                  className="w-full border p-3 rounded-lg"
+                  onChange={(e) =>
+                    setForm({ ...form, kids: Number(e.target.value) })
+                  }
+                />
+              </div>
+            </div>
+            {/* DATE */}
+            <div className="flex gap-3">
+              <div
+                onClick={() => setSelecting("checkIn")}
+                className="w-full p-3 border rounded-lg text-center cursor-pointer"
+              >
+                {form.checkIn ? form.checkIn.toDateString() : "Check-in"}
+              </div>
+
+              <div
+                onClick={() => setSelecting("checkOut")}
+                className="w-full p-3 border rounded-lg text-center cursor-pointer"
+              >
+                {form.checkOut ? form.checkOut.toDateString() : "Check-out"}
+              </div>
+            </div>
+
+            {/* CALENDAR */}
+            <div className="border rounded-xl p-2 ">
+              <DatePicker
+                inline
+                selectsRange
+                startDate={form.checkIn}
+                endDate={form.checkOut}
+                onChange={(dates) => {
+                  const [start, end] = dates;
+
+                  if (selecting === "checkIn") {
+                    setForm({
+                      ...form,
+                      checkIn: start,
+                      checkOut: null,
+                    });
+                    setSelecting("checkOut");
+                  } else {
+                    setForm({
+                      ...form,
+                      checkIn: form.checkIn,
+                      checkOut: end,
+                    });
+                  }
+                }}
+                minDate={new Date()}
+                dayClassName={getDateType}
+              />
+            </div>
+            <textarea
+              placeholder="Your Message"
+              className="w-full border p-3 rounded-lg"
+              onChange={(e) => setForm({ ...form, message: e.target.value })}
+            />
+
+            {nights > 0 && (
+              <p className="text-sm text-gray-600">{nights} nights selected</p>
+            )}
+            <p className=" text-sm mt-2 text-black">
+              Cleaning Fee - 135 - Mandatory
+            </p>
+            <button className="w-full bg-[#FFE8BE] py-3 rounded-lg">
+              Send Booking
+            </button>
+          </form>
+        </div>
+      </section>
+
+      {/* 🔥 STYLES */}
+      <style>{`
+
+/* MAIN */
+.react-datepicker {
+  width: 100% !important;
+  overflow: hidden;
+  position: relative;
+  max-width: 320px;
+  margin: auto;
+  border: none;
+  font-family: inherit;
+}
+
+/* HEADER */
+.react-datepicker__header {
+  background: transparent;
+  border-bottom: none;
+}
+
+/* MONTH */
+.react-datepicker__current-month {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* KEEP DEFAULT ROW STRUCTURE (IMPORTANT) */
+.react-datepicker__week {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* DAY */
+.react-datepicker__day,
+.react-datepicker__day-name {
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  margin: 2px;
+  border-radius: 8px;
+}
+
+/* SMALL MOBILE */
+@media (max-width: 400px) {
+  .react-datepicker__day,
+  .react-datepicker__day-name {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 12px;
+  }
+}
+
+/* DESKTOP */
+@media (min-width: 768px) {
+  .react-datepicker__day,
+  .react-datepicker__day-name {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+  }
+}
+
+/* COLORS */
+.react-datepicker__day.past-day {
+  background: #f1f1f1 !important;
+  color: #aaa !important;
+}
+
+.react-datepicker__day.blocked-day {
+  background: #5C5CFF !important;
+  text-decoration: line-through;
+  color: white !important;
+}
+
+.react-datepicker__day.available-day {
+  background: #d1fae5;
+}
+
+.react-datepicker__day.checkin-day {
+  background: linear-gradient(
+    315deg,
+    #5C5CFF 50%, 
+     0% , #d1fae5
+  ) !important;
+   color: black
+}
+  .react-datepicker__day.checkout-day {
+  background: linear-gradient(
+     135deg,
+    #5C5CFF 50%,
+    0% , #d1fae5
+  ) !important;
+   color: black
+}
+ .react-datepicker__day.turnover-day {
+  background: #5C5CFF !important;
+  position: relative;
+}
+
+.react-datepicker__day.turnover-day::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 48%,
+    white 50%,
+    transparent 52%
+  );
+}
+/* HOVER 
+.react-datepicker__day:hover {
+  background: #6366f1 !important;
+  color: white !important;
+}
+  .react-datepicker__day--outside-month {
+  opacity: 0;
+  pointer-events: none;
+}*/
+
+`}</style>
+    </>
+  );
+}

@@ -30,7 +30,7 @@ import galleryRoutes from "./routes/galleryRoutes.js";
 import icalcalendarRoutes from "./routes/icalRoutes.js";
 
 const app = express();
-const PORT = process.env.PORT || 4002;
+const PORT = process.env.PORT || 4004;
 const allowedOrigins = [
   "https://calypso401.com",
   "https://www.calypso401.com",

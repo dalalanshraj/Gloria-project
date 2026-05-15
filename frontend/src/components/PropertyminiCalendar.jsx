@@ -3,314 +3,259 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import api from "../api/axios";
 
-export default function PropertyminiCalendar({ listingId }) {
-  const [calendarDates, setCalendarDates] = useState([]);
+export default function PropertyminiCalendar() {
+  const [blockedDates, setBlockedDates] = useState([]);
 
   useEffect(() => {
-    if (listingId) {
-      fetchDates();
-    }
-  }, [listingId]);
+    fetchDates();
+  }, []);
 
-  const fetchDates = async () => {
-    try {
-      const res = await api.get(
-        `/listings/${listingId}/calendar`
-      );
-
-      console.log("CALENDAR API:", res.data);
-
-      setCalendarDates(
-        Array.isArray(res.data.calendar)
-          ? res.data.calendar
-          : Array.isArray(res.data)
-          ? res.data
-          : []
-      );
-
-    } catch (err) {
-      console.log(err);
-    }
+  const fetchDates = () => {
+    api
+      .get("/calendar/blocked")
+      .then((res) => setBlockedDates(res.data))
+      .catch(console.log);
   };
 
-  // NORMALIZE DATE
-  const normalizeDate = (date) => {
-    const d = new Date(date);
-
-    return `${d.getFullYear()}-${
-      d.getMonth()
-    }-${d.getDate()}`;
+  const isBlocked = (date) => {
+    return blockedDates.some((r) => {
+      const s = new Date(r.start);
+      const e = new Date(r.end);
+      return date >= s && date < e;
+    });
   };
 
-  // DAY CLASS
   const getDateType = (date) => {
+    // 🔥 FIRST → turnover check
+    for (let i = 0; i < blockedDates.length; i++) {
+      const currentEnd = new Date(blockedDates[i].end);
 
-    const current = normalizeDate(date);
+      for (let j = 0; j < blockedDates.length; j++) {
+        const nextStart = new Date(blockedDates[j].start);
 
-    const found = calendarDates.find(
-      (d) => normalizeDate(d.date) === current
-    );
+        const diff = (nextStart - currentEnd) / (1000 * 60 * 60 * 24);
 
-    // AVAILABLE
-    if (!found) {
-      return "available-day";
+        if ((diff === 0 || diff === 1) && isSameDay(date, currentEnd)) {
+          return "turnover-day";
+        }
+      }
     }
 
-    // NEXT DAY
-    const nextDay = new Date(date);
+    // THEN normal logic
+    for (let r of blockedDates) {
+      const start = new Date(r.start);
+      const end = new Date(r.end);
 
-    nextDay.setDate(nextDay.getDate() + 1);
-
-    const next = calendarDates.find(
-      (d) =>
-        normalizeDate(d.date) ===
-        normalizeDate(nextDay)
-    );
-
-    // TURNOVER
-    if (
-      found.status === "COUT" &&
-      next &&
-      next.status === "CIN"
-    ) {
-      return "turnover-day";
-    }
-
-    // CHECK-IN
-    if (found.status === "CIN") {
-      return "checkin-day";
-    }
-
-    // CHECK-OUT
-    if (found.status === "COUT") {
-      return "checkout-day";
-    }
-
-    // BOOKED
-    if (found.status === "R") {
-      return "blocked-day";
-    }
-
-    // HOLD
-    if (found.status === "H") {
-      return "hold-day";
+      if (isSameDay(date, start)) return "checkin-day";
+      if (isSameDay(date, end)) return "checkout-day";
+      if (date > start && date < end) return "blocked-day";
     }
 
     return "available-day";
   };
 
+  const isSameDay = (d1, d2) => {
+    return (
+      d1.getDate() === d2.getDate() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getFullYear() === d2.getFullYear()
+    );
+  };
   return (
     <div className="w-full">
-
+      {/* HEADING */}
       <h3 className="text-lg font-semibold text-center mb-4">
         Availability Calendar
       </h3>
 
-     <DatePicker
-  inline
-  selected={null}
-  onChange={() => {}}
-  minDate={new Date()}
-  dayClassName={getDateType}
-  fixedHeight
-  showPopperArrow={false}
-
-  // DISABLE PAST DATES
-  filterDate={(date) => {
-
-    const today = new Date();
-
-    today.setHours(0, 0, 0, 0);
-
-    return date >= today;
-  }}
-/>
+      {/* CALENDAR */}
+      <DatePicker
+        inline
+        selected={null}
+        onChange={() => {}}
+        minDate={new Date()}
+        dayClassName={getDateType}
+        showOtherMonths={false}
+        fixedHeight
+        filterDate={(date) => {
+          const today = new Date();
+          return date >= today && !isBlocked(date);
+        }}
+      />
 
       {/* LEGEND */}
-      <div className="flex justify-center gap-4 mt-5 flex-wrap text-sm">
+      <div className="flex justify-center gap-6 mt-6 text-sm flex-wrap">
+          {/* Available */}
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-4 bg-[#d1fae5] rounded"></span>
+            Available
+          </div>
 
-        {/* AVAILABLE */}
-        <div className="flex items-center gap-2">
-          <span className="w-4 h-4 rounded bg-[#d1fae5]"></span>
-          Available
-        </div>
+          {/* Booked */}
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-4 bg-[#5C5CFF] rounded"></span>
+            Booked
+          </div>
 
-        {/* BOOKED */}
-        <div className="flex items-center gap-2">
-          <span className="w-4 h-4 rounded bg-[#5C5CFF]"></span>
-          Booked
-        </div>
-
-        {/* CHECK-IN */}
-        <div className="flex items-center gap-2">
-          <span
-            className="w-4 h-4 rounded border"
-            style={{
-              background:
-                "linear-gradient(135deg, #5C5CFF 50%, #d1fae5 50%)",
-            }}
-          ></span>
-          Check-In
-        </div>
-
-        {/* CHECK-OUT */}
-        <div className="flex items-center gap-2">
-          <span
-            className="w-4 h-4 rounded border"
-            style={{
-              background:
-                "linear-gradient(315deg, #5C5CFF 50%, #d1fae5 50%)",
-            }}
-          ></span>
-          Check-Out
-        </div>
-
-        {/* TURNOVER */}
-        <div className="flex items-center gap-2">
-          <span className="relative w-4 h-4 rounded bg-[#5C5CFF] overflow-hidden">
+          {/* Check-in */}
+          <div className="flex items-center gap-2 ">
             <span
-              className="absolute w-[140%] h-[2px] bg-white top-1/2 left-[-20%] rotate-45"
+              className="w-4 h-4 rounded border"
+              style={{
+                background: "linear-gradient(135deg, #5C5CFF 50%, white 50%)",
+              }}
             ></span>
-          </span>
-          Turnover
-        </div>
+            Check-In Only
+          </div>
 
-        {/* HOLD */}
-        <div className="flex items-center gap-2">
-          <span className="w-4 h-4 rounded bg-yellow-400"></span>
-          Hold
-        </div>
+          {/* Check-out */}
+          <div className="flex items-center gap-2">
+            <span
+              className="w-4 h-4 rounded border"
+              style={{
+                background: "linear-gradient(315deg, #5C5CFF 50%, white 50%)",
+              }}
+            ></span>
+            Check-Out Only
+          </div>
 
-      </div>
+          {/* Turnover */}
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-4 relative bg-white rounded border">
+              <span
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(135deg, transparent 48%, black 50%, transparent 52%)",
+                }}
+              ></span>
+            </span>
+            Turn Over Date
+          </div>
+        </div>
 
       {/* STYLES */}
       <style>{`
 
+/* MAIN */
 .react-datepicker {
-  border: none;
-  width: 100%;
+  width: 100% !important;
+  overflow: hidden;
+  position: relative;
   max-width: 320px;
   margin: auto;
+  border: none;
   font-family: inherit;
 }
 
+/* HEADER */
 .react-datepicker__header {
-  background: white;
+  background: transparent;
   border-bottom: none;
 }
 
+/* MONTH */
 .react-datepicker__current-month {
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 10px;
 }
 
+/* KEEP DEFAULT ROW STRUCTURE (IMPORTANT) */
+.react-datepicker__week {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* DAY */
 .react-datepicker__day,
 .react-datepicker__day-name {
-  width: 38px;
-  height: 38px;
-  line-height: 38px;
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
   margin: 2px;
   border-radius: 8px;
-  position: relative;
 }
 
-/* AVAILABLE */
-.react-datepicker__day.available-day {
-  background-color: #d1fae5 !important;
-  color: black !important;
-}
-
-/* BOOKED */
-.react-datepicker__day.blocked-day {
-  background-color: #5C5CFF !important;
-  color: white !important;
-}
-
-/* HOLD */
-.react-datepicker__day.hold-day {
-  background-color: #facc15 !important;
-  color: black !important;
-}
-
-/* CHECK-IN */
-.react-datepicker__day.checkin-day {
-  background: linear-gradient(
-    135deg,
-    #5C5CFF 50%,
-    #d1fae5 50%
-  ) !important;
-
-  color: black !important;
-}
-
-/* CHECK-OUT */
-.react-datepicker__day.checkout-day {
-  background: linear-gradient(
-    315deg,
-    #5C5CFF 50%,
-    #d1fae5 50%
-  ) !important;
-
-  color: black !important;
-}
-
-/* TURNOVER */
-.react-datepicker__day.turnover-day {
-  background-color: #5C5CFF !important;
-  color: white !important;
-  position: relative;
-  overflow: hidden;
-}
-
-/* DIAGONAL LINE */
-.react-datepicker__day.turnover-day::after {
-  content: "";
-
-  position: absolute;
-
-  width: 140%;
-  height: 2px;
-
-  background: white;
-
-  top: 50%;
-  left: -20%;
-
-  transform: rotate(-45deg);
-
-  z-index: 2;
-}
-
-/* HOVER */
-.react-datepicker__day:hover {
-  opacity: 0.9;
-}
-
-/* MOBILE */
-@media (max-width: 480px) {
-
+/* SMALL MOBILE */
+@media (max-width: 400px) {
   .react-datepicker__day,
   .react-datepicker__day-name {
-    width: 34px;
-    height: 34px;
-    line-height: 34px;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
     font-size: 12px;
   }
-
 }
-  /* HIDE OUTSIDE DAYS */
-.react-datepicker__day--outside-month {
-  visibility: hidden;
+
+/* DESKTOP */
+@media (min-width: 768px) {
+  .react-datepicker__day,
+  .react-datepicker__day-name {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+  }
+}
+
+/* COLORS */
+.react-datepicker__day.past-day {
+  background: #f1f1f1 !important;
+  color: #aaa !important;
+}
+
+.react-datepicker__day.blocked-day {
+  background: #5C5CFF !important;
+  text-decoration: line-through;
+  color: white !important;
+}
+
+.react-datepicker__day.available-day {
+  background: #d1fae5;
+}
+
+.react-datepicker__day.checkin-day {
+  background: linear-gradient(
+    315deg,
+    #5C5CFF 50%, 
+     0% , #d1fae5
+  ) !important;
+   color: black
+}
+  .react-datepicker__day.checkout-day {
+  background: linear-gradient(
+     135deg,
+    #5C5CFF 50%,
+    0% , #d1fae5
+  ) !important;
+   color: black
+}
+ .react-datepicker__day.turnover-day {
+  background: #5C5CFF !important;
+  position: relative;
+}
+
+.react-datepicker__day.turnover-day::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 48%,
+    white 50%,
+    transparent 52%
+  );
+}
+/* HOVER 
+.react-datepicker__day:hover {
+  background: #6366f1 !important;
+  color: white !important;
+}
+  .react-datepicker__day--outside-month {
+  opacity: 0;
   pointer-events: none;
-}
+}*/
 
-/* DISABLE PAST DAYS */
-.react-datepicker__day--disabled {
-  // opacity: 0.1;
-  cursor: not-allowed;
-}
-
-      `}</style>
+`}</style>
     </div>
   );
 }

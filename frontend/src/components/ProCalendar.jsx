@@ -56,7 +56,7 @@ export default function ProCalendar({ listingId }) {
   };
 
   return (
-    <div className="bg-white shadow rounded-xl p-6 mt-10">
+    <div className="bg-white  mb-10">
       <div className="flex justify-between items-center mb-4 ">
   <button
     onClick={() => setCurrentMonth(currentMonth.subtract(1, "month"))}

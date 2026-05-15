@@ -1,34 +1,34 @@
-import { useState, useEffect } from "react";
-import { useLocation, Link } from "react-router-dom";
-import { Phone, Menu, X, ChevronDown } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Menu, X, ChevronDown, Phone } from "lucide-react";
 import api from "../api/axios.js";
-import logoIme from "../assets/logo/LOGO5.png";
-import logoScrolled from "../assets/logo/logo4.png";
+import { Link } from "react-router-dom";
 
-const Navbar = () => {
-  const location = useLocation();
+import logo from "../assets/logo/LOGO.png";
 
-  const [isScrolled, setIsScrolled] = useState(false);
+export default function Navbar({ listingId }) {
+  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState(null);
-  const [mobileMenu, setMobileMenu] = useState(false);
-  const [mobileDropdown, setMobileDropdown] = useState(null);
-  const [communities, setCommunities] = useState([]);
-
-  if (location.pathname.startsWith("/admin")) return null;
+  const [dropdown, setDropdown] = useState(false);
+  const timeoutRef = useRef(null);
+  const [contactNumber, setContactNumber] = useState("");
 
   useEffect(() => {
-    const fetchCommunities = async () => {
-      try {
-        const res = await api.get("/listings/published");
-        setCommunities(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchCommunities();
-  }, []);
+    if (!listingId) return;
 
+    api
+      .get(`/listings/${listingId}`)
+      .then((res) => {
+        console.log(res.data);
+
+        // ✅ SAME AS ABOUT SECTION
+        setContactNumber(res.data?.property?.altPhone || "");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [listingId]);
+
+  // SCROLL EFFECT
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -39,183 +39,195 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const dropdowns = {
-    // ABOUT: [{ name: "ABOUT", }],
-    COMMUNITIES: [
-      {
-        name: "Crystal Sands",
-        link: "/community/crystal-sands",
-      },
-      {
-        name: "Mediterranea",
-        link: "/community/mediterranea",
-      },
-    ],
+  // DROPDOWN
+  const handleEnter = () => {
+    clearTimeout(timeoutRef.current);
+    setDropdown(true);
   };
 
-  const menuItems = [
-    { name: "HOME", link: "/" },
-    { name: "ABOUT", link: "/about-us" },
-    { name: "COMMUNITIES" },
-    { name: "PROPERTIES", link: "/properties" },
-    { name: "GALLERY", link: "/gallery" },
-    { name: "REVIEWS", link: "/reviews" },
+  const handleLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setDropdown(false);
+    }, 200);
+  };
+
+  // MENU LINKS
+  const links = [
+    { name: "Home", path: "/" },
+
+    {
+      name: "Photos",
+      path: "/gallery",
+    },
+
+    { name: "About", path: "/about" },
+
+    {
+      name: "Contact",
+      path: "/contect-us",
+    },
   ];
 
   return (
-    <header
-      className={`fixed w-full z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white shadow-md" : "bg-transparent"
+    <nav
+      className={`fixed w-full  z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-black/70 backdrop-blur-md shadow-lg"
+          : "bg-black/20 backdrop-blur-sm"
       }`}
     >
-      {/* TOP BAR */}
-      <div className="flex justify-between items-center px-4 md:px-10 py-3">
-        {/* LOGO */}
-        <Link to="/">
-          <img
-            src={isScrolled ? logoScrolled : logoIme}
-            className="w-40 md:w-54 transition-all duration-300"
-            alt="logo"
-          />
-        </Link>
+      <div className="max-w-7xl  mx-auto px-6 md:px-10 py-4">
+        {/* MAIN NAV */}
+        <div className="flex items-center justify-between">
+          {/* LEFT MENU */}
+          <ul className="hidden md:flex items-center gap-8 text-white">
+            {links.map((link, i) => (
+              <li key={i} className="relative group text-[19px] font-medium">
+                <Link to={link.path}>{link.name}</Link>
 
-        {/* DESKTOP CONTACT */}
-        <div className="hidden md:flex items-center gap-4 bg-gradient-to-r from-[#0B63F6] to-[#467FF7] px-3 py-2 rounded-2xl shadow-lg">
-          {/* Animated Phone Icon */}
-          <div className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center animate-pulse">
-            <Phone className="text-white w-5 h-5 animate-bounce" />
+                <span
+                  className="
+                  absolute 
+                  left-0 
+                  -bottom-1 
+                  w-0 
+                  h-[2px] 
+                  bg-yellow-400 
+                  transition-all 
+                  duration-300 
+                  group-hover:w-full
+                "
+                ></span>
+              </li>
+            ))}
+          </ul>
+
+          {/* CENTER LOGO */}
+          <div
+            className=" pt-13
+            absolute 
+            left-1/2 
+            -translate-x-1/2"
+          >
+            <Link to="/">
+              <img src={logo} alt="logo" className="w-32 md:w-30" />
+            </Link>
           </div>
 
-          {/* Divider */}
-          <div className="w-[1px] h-12 bg-white/50"></div>
-
-          {/* Text */}
-          <div>
-            <p className="text-sm text-white/80 leading-none mb-1">
-              Call Today
-            </p>
-
+          {/* RIGHT CONTACT */}
+          <div className="hidden md:flex items-center">
             <a
-              href="tel:4042756533"
-              className="text-1xl font-bold text-white hover:text-gray-200 transition"
+              href={`tel:${contactNumber}`}
+              className="
+              flex 
+              items-center 
+              gap-3
+              bg-white/10
+              border
+              border-white/20
+              backdrop-blur-md
+              px-5
+              py-3
+              rounded-full
+              hover:bg-yellow-400
+              hover:text-black
+              transition-all
+              duration-300
+              text-white
+            "
             >
-              404-275-6533
+              <div
+                className="
+                w-10 
+                h-10 
+                rounded-full 
+                bg-yellow-400 
+                text-black
+                flex 
+                items-center 
+                justify-center
+              "
+              >
+                <Phone size={18} />
+              </div>
+
+              <div className="leading-tight">
+                <p className="text-xs uppercase tracking-wider">
+                  Contact Today
+                </p>
+
+                <p className="font-semibold text-[15px]">{contactNumber}</p>
+              </div>
             </a>
           </div>
-        </div>
 
-        {/* MOBILE MENU BUTTON */}
-        <button
-          onClick={() => setMobileMenu(!mobileMenu)}
-          className={`md:hidden transition-colors duration-300 ${
-            scrolled ? "text-black" : "text-white"
-          }`}
-        >
-          {mobileMenu ? <X size={28} /> : <Menu size={28} />}
-        </button>
-      </div>
-
-      {/* DESKTOP NAV */}
-      <nav className="hidden md:flex justify-center bg-[#467FF7] text-white text-xl font-bold cursor-pointer">
-        {menuItems.map((item) => {
-          const hasDropdown = dropdowns[item.name];
-
-          return (
-            <div
-              key={item.name}
-              className="relative px-10 py-6 cursor-pointer"
-              onMouseEnter={() => hasDropdown && setOpenDropdown(item.name)}
-              onMouseLeave={() => setOpenDropdown(null)}
-            >
-              {item.link ? (
-                <Link to={item.link}>{item.name}</Link>
-              ) : (
-                <span>{item.name}</span>
-              )}
-
-              {/* DROPDOWN */}
-              {openDropdown === item.name && hasDropdown && (
-                <ul className="absolute top-full left-0 bg-blue-500 min-w-[180px] shadow-lg">
-                  {dropdowns[item.name].map((sub, i) => (
-                    <li key={i}>
-                      <Link
-                        to={sub.link}
-                        className="block px-4 py-2 hover:bg-blue-600"
-                      >
-                        {sub.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          );
-        })}
-      </nav>
-
-      {/* MOBILE NAV */}
-      {mobileMenu && (
-        <div className="md:hidden bg-[#467FF7] text-white px-4 py-4 space-y-3">
-          {menuItems.map((item) => {
-            const hasDropdown = dropdowns[item.name];
-
-            return (
-              <div key={item.name}>
-                <div
-                  className="flex justify-between items-center cursor-pointer"
-                  onClick={() =>
-                    hasDropdown
-                      ? setMobileDropdown(
-                          mobileDropdown === item.name ? null : item.name,
-                        )
-                      : setMobileMenu(false)
-                  }
-                >
-                  {item.link ? (
-                    <Link to={item.link}>{item.name}</Link>
-                  ) : (
-                    <span>{item.name}</span>
-                  )}
-
-                  {hasDropdown && <ChevronDown size={18} />}
-                </div>
-
-                {/* MOBILE DROPDOWN */}
-                {mobileDropdown === item.name && hasDropdown && (
-                  <div className="pl-4 mt-2 space-y-2">
-                    {dropdowns[item.name].map((sub, i) => (
-                      <Link
-                        key={i}
-                        to={sub.link}
-                        onClick={() => setMobileMenu(false)}
-                        className="block text-sm"
-                      >
-                        {sub.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-
-          {/* MOBILE CONTACT */}
-          <div className="pt-4 border-t border-white/30">
-            <p className="text-sm">Call today</p>
-            <p className="text-lg font-bold">404-275-6533</p>
+          {/* MOBILE BUTTON */}
+          <div className="md:hidden ml-auto text-white">
+            <button onClick={() => setOpen(!open)}>
+              {open ? <X size={30} /> : <Menu size={30} />}
+            </button>
           </div>
         </div>
-      )}
-    </header>
-  );
-};
+      </div>
 
-export default Navbar;
+      {/* MOBILE MENU */}
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-500 ${
+          open ? "max-h-[500px]" : "max-h-0"
+        }`}
+      >
+        <div
+          className="
+          bg-black/95
+          backdrop-blur-lg
+          px-6
+          py-6
+          text-white
+          space-y-5
+        "
+        >
+          {links.map((link, i) => (
+            <Link
+              key={i}
+              to={link.path}
+              onClick={() => setOpen(false)}
+              className="
+              block
+              text-lg
+              border-b
+              border-white/10
+              pb-3
+            "
+            >
+              {link.name}
+            </Link>
+          ))}
+
+          {/* MOBILE CONTACT */}
+          <a
+            href={`tel:${contactNumber}`}
+            className="
+            flex
+            items-center
+            gap-3
+            bg-yellow-400
+            text-black
+            rounded-2xl
+            px-5
+            py-4
+            mt-6
+          "
+          >
+            <Phone size={20} />
+
+            <div>
+              <p className="text-sm">Contact Today</p>
+
+              <p className="font-bold">{contactNumber}</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </nav>
+  );
+}

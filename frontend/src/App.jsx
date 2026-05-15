@@ -7,11 +7,11 @@ import Footer from "./components/Footer";
 
 // FRONTEND
 import HeroSection from "./pages/Home";
-import Properties from "./pages/Properties";
-import Results from "./pages/Results";
+// import Properties from "./pages/Properties";
+// import Results from "./pages/Results";
 import PropertyDetail from "./pages/PropertyDetails";
-import BookingPage from "./pages/BookingPage";
-import SeaDunesBeachFront from "./pages/PropertiesListing/SeaDunes";
+// import BookingPage from "./pages/BookingPage";
+// import SeaDunesBeachFront from "./pages/PropertiesListing/SeaDunes";
 
 
 // ADMIN
@@ -23,12 +23,16 @@ import Listings from "./admin/pages/Listings";
 import AddListing from "./admin/pages/AddListing";
 import Bookings from "./admin/pages/Bookings";
 import Users from "./admin/pages/Users";
-import SpecialsDeals from "./pages/Specials";
-import Reviews from "./pages/Reviews";
-import AboutUs from "./pages/About";
-import CommunityDetails from "./pages/CommunityDetails";
 import GalleryAdmin from "./admin/pages/Gallery";
-import Gallery from "./pages/Gallerypage";
+import Gallery from "./pages/Gallery";
+import About from "./pages/About";
+import ScrollToTop from "./components/ScrollToTop";
+import Contact from "./pages/Contact";
+import BookingPolicy from "./pages/bookingPolicy";
+// import SpecialsDeals from "./pages/Specials";
+// import Reviews from "./pages/Reviews";
+// import AboutUs from "./pages/About";
+// import CommunityDetails from "./pages/CommunityDetails";
 
 function App() {
   const location = useLocation();
@@ -38,23 +42,28 @@ function App() {
 
   return (
     <>
+    <ScrollToTop />
       {/* FRONTEND ONLY */}
-      {!isAdminRoute && <Navbar />}
+      {!isAdminRoute && <Navbar listingId="6a04c24a43652c16fdde1a52"/>}
 
       <Routes>
         {/* FRONTEND ROUTES */}
-        <Route path="/" element={<HeroSection />} />
-        <Route path="/properties" element={<Properties />} />
+         <Route path="/" element={<HeroSection />} />
+          <Route path="/:id" element={<PropertyDetail />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contect-us" element={<Contact listingId="6a04c24a43652c16fdde1a52"/>} />  
+          <Route path="/booking-policy" element={<BookingPolicy />}/>  
+        {/* <Route path="/properties" element={<Properties />} />
         <Route path="/results" element={<Results />} />
         <Route path="/BookingPage" element={<BookingPage />} />
-        <Route path="/:id" element={<PropertyDetail />} />
+       
         <Route path="/specials" element={<SpecialsDeals/>} />
         <Route path="/reviews" element={< Reviews />} />
         <Route path="/sea-dunes-beach-front" element={<SeaDunesBeachFront />} />
         <Route path="/about-us" element={<AboutUs />} />
-        <Route path="/community/:slug" element={<CommunityDetails />} />
-        <Route path="/gallery" element={<Gallery />} />
-        
+        <Route path="/community/:id" element={<CommunityDetails />} /> */}
+         
           
 
         {/* ADMIN LOGIN */}
@@ -126,7 +135,7 @@ function App() {
             </AdminRoute>
           }
         />
-         <Route
+        <Route
           path="/admin/gallery"
           element={
             <AdminRoute>
@@ -137,9 +146,11 @@ function App() {
           }
         />
       </Routes>
+      
+
 
       {/* FRONTEND ONLY */}
-      {!isAdminRoute && <Footer />}
+      {!isAdminRoute && <Footer listingId="6a04c24a43652c16fdde1a52" />}
     </>
   );
 }

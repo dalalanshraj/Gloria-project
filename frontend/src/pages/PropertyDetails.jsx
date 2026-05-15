@@ -49,20 +49,13 @@ const PropertyDetail = () => {
   // ================= FETCH CALENDAR =================
   useEffect(() => {
     api.get(`/listings/${id}/calendar`).then((res) => {
-      const ranges = res.data.icalRanges || [];
-
-      const blocked = [];
-
-      ranges.forEach((r) => {
-        const start = new Date(r.start);
-        const end = new Date(r.end);
-
-        for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
-          const dt = new Date(d);
+      const blocked = res.data
+        .filter((d) => d.status === "R" || d.status === "H")
+        .map((d) => {
+          const dt = new Date(d.date);
           dt.setHours(0, 0, 0, 0);
-          blocked.push(new Date(dt));
-        }
-      });
+          return dt;
+        });
 
       setBlockedDates(blocked);
     });
@@ -203,7 +196,7 @@ const PropertyDetail = () => {
             );
           })}
           {/* Activities */}
-
+         
           {activitiesData.map((section) => {
             const selected = section.options.filter(
               (item) => listing.activities?.[item],
@@ -211,8 +204,9 @@ const PropertyDetail = () => {
             if (selected.length === 0) return null;
 
             return (
+              
               <div key={section.title} className="mb-6">
-                <h2 className="text-2xl font-semibold mt-8 mb-4">Activities</h2>
+                 <h2 className="text-2xl font-semibold mt-8 mb-4">Activities</h2>
                 <h5 className="bg-[#2f9bad] text-white p-2 rounded-xl text-lg mb-2">
                   {section.title}
                 </h5>
@@ -263,7 +257,8 @@ const PropertyDetail = () => {
                 <div key={review._id} className="mb-8">
                   <div className=" rounded-xl p-6 bg-gray-50">
                     {/* ⭐ RATING */}
-                    <div className="text-yellow-500 text-lg mb-2">
+                    <div className="text-yellow-500
+  text-lg mb-2">
                       {"★".repeat(review.rating)}
                       {"☆".repeat(5 - review.rating)}
                     </div>
@@ -273,14 +268,7 @@ const PropertyDetail = () => {
 
                     {/* MESSAGE */}
                     <p className="text-gray-700 mt-2">{review.message}</p>
-                    <div className="flex">
-                      <p className="text-gray-700 mt-2">-{review.name}</p>
-                      <p className="mt-2 mx-3">
-                        {review.stayDate
-                          ? new Date(review.stayDate).toLocaleDateString()
-                          : "N/A"}
-                      </p>
-                    </div>
+                    <p className="text-gray-700 mt-2">-{review.name}</p>
 
                     {/* 🔥 ADMIN REPLY (ADD THIS) */}
                     {review.reply && (
@@ -303,89 +291,31 @@ const PropertyDetail = () => {
           >
             Write a Review
           </button>
-
+ 
           {openReview && (
             <ReviewModal listingId={id} onClose={() => setOpenReview(false)} />
           )}
-        </div>
+        </div> 
 
         {/* RIGHT BOOKING */}
         {/* CALENDAR */}
 
         <div className="lg:col-span-1">
-          <div className="sticky top-[0px] self-start bg-white rounded-2xl shadow p-6 space-y-5 ">
-            <div className="flex gap-2">
-              <DatePicker
-                selected={checkIn}
-                onChange={(date) => {
-                  setCheckIn(date);
-                  setCheckOut(null);
-                }}
-                excludeDates={blockedDates}
-                placeholderText="Check-in"
-                minDate={new Date()}
-                className="border p-3 rounded w-full"
-              />
-
-              <DatePicker
-                selected={checkOut}
-                onChange={(date) => setCheckOut(date)}
-                excludeDates={blockedDates}
-                placeholderText="Check-out"
-                minDate={
-                  checkIn
-                    ? (() => {
-                        const d = new Date(checkIn);
-
-                        // ✅ IMPORTANT FIX
-                        d.setHours(12, 0, 0, 0);
-
-                        d.setDate(d.getDate() + getMinNightsForDate(checkIn));
-
-                        return d;
-                      })()
-                    : new Date()
-                }
-                className="border p-3 rounded w-full"
-              />
-            </div>
-            {/* <button
-            disabled={!checkIn || !checkOut}
-            onClick={() => setOpenBooking(true)}
-            className={`w-full py-3 rounded-xl font-semibold text-white 
-      ${!checkIn || !checkOut
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 cursor-pointer"
-              }`}
-          >
-            Book Now
-          </button> */}
-            <button
-              onClick={() => setOpenInquiry(true)}
-              className="w-full py-3 rounded-xl font-semibold bg-green-600 hover:bg-green-700 text-white cursor-pointer"
-            >
-              Send Inquiry
-            </button>
-            <PropertyminiCalendar listingId={listing._id} className="mt-20" />
-            {openInquiry && (
-              <InquiryModal
-                propertyId={id}
-                onClose={() => setOpenInquiry(false)}
-              />
-            )}
+          <div className="sticky top-[100px] bg-white rounded-3xl shadow-xl p-6 ">
+            <PropertyminiCalendar />
           </div>
         </div>
       </div>
 
       {/* BOOKING MODAL */}
-      {openBooking && (
+      {/* {openBooking && (
         <BookingPreviewModal
           propertyId={id}
           checkIn={formatDate(checkIn)}
           checkOut={formatDate(checkOut)}
           onClose={() => setOpenBooking(false)}
         />
-      )}
+      )} */}
     </>
   );
 };

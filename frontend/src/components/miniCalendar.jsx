@@ -137,8 +137,8 @@ export default function DisplayCalendar() {
           </div>
         </div>
         <p className="mt-4 text-center">
-          <span className="text-[#2f9bad]">Check-in :</span> 4:30 PM /{" "}
-          <span className="text-[#2f9bad]">Check-out:</span> 9:00 AM
+          <span className="text-[#2f9bad]">Check-in :</span> 4:00 PM /{" "}
+          <span className="text-[#2f9bad]">Check-out:</span> 10:00 AM
         </p>
       </div>
 

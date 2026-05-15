@@ -14,15 +14,14 @@ const emptyRate = {
   nightly: "",
   weekly: "0",
   monthly: "0",
-  minNights: ""
+  minNights: "",
 };
-
 
 const emptyFee = {
   name: "",
   value: "",
   type: "$",
-  option: "mandatory"
+  option: "mandatory",
 };
 
 export default function RatesTab({ listingId, goNextTab }) {
@@ -37,6 +36,17 @@ export default function RatesTab({ listingId, goNextTab }) {
   const { showModal } = useModal();
   const [editRateIndex, setEditRateIndex] = useState(null);
 
+  const normalizeDate = (date) => {
+    return new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      12, // noon fix
+      0,
+      0,
+    );
+  };
+
   /* ===============================
      LOAD LISTING DATA
   ================================ */
@@ -45,11 +55,11 @@ export default function RatesTab({ listingId, goNextTab }) {
 
     api
       .get(`/listings/${listingId}`)
-      .then(res => {
+      .then((res) => {
         setRates(res.data?.rates || []);
         setExtraFees(res.data?.extraFees || []);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   }, [listingId]);
 
   /* ===============================
@@ -75,44 +85,44 @@ export default function RatesTab({ listingId, goNextTab }) {
       let res;
 
       if (editRateIndex !== null) {
-        //  EDIT MODE
-        res = await api.put(
-          `/listings/${listingId}/rates/edit`,
-          {
-            index: editRateIndex,
-            rate: {
-              ...form,
-              nightly: Number(form.nightly),
-              weekly: Number(form.weekly),
-              monthly: Number(form.monthly),
-              minNights: Number(form.minNights),
-              from: new Date(form.from),
-              to: new Date(form.to),
-            },
-          }
-        );
+        // EDIT MODE
+        res = await api.put(`/listings/${listingId}/rates/edit`, {
+          index: editRateIndex,
+
+          rate: {
+            ...form,
+
+            nightly: Number(form.nightly),
+            weekly: Number(form.weekly),
+            monthly: Number(form.monthly),
+            minNights: Number(form.minNights),
+
+            from: normalizeDate(form.from),
+            to: normalizeDate(form.to),
+          },
+        });
       } else {
-        // ➕ ADD MODE
-        res = await api.put(
-          `/listings/${listingId}/rates`,
-          {
-            rate: {
-              ...form,
-              nightly: Number(form.nightly),
-              weekly: Number(form.weekly),
-              monthly: Number(form.monthly),
-              minNights: Number(form.minNights),
-              from: new Date(form.from),
-              to: new Date(form.to),
-            },
-          }
-        );
+        // ADD MODE
+        res = await api.put(`/listings/${listingId}/rates`, {
+          rate: {
+            ...form,
+
+            nightly: Number(form.nightly),
+            weekly: Number(form.weekly),
+            monthly: Number(form.monthly),
+            minNights: Number(form.minNights),
+
+            from: normalizeDate(form.from),
+            to: normalizeDate(form.to),
+          },
+        });
       }
 
       setRates(res.data.rates);
-      setForm(emptyRate);
-      setEditRateIndex(null);
 
+      setForm(emptyRate);
+
+      setEditRateIndex(null);
     } catch {
       showModal("Failed to save rate");
     }
@@ -123,10 +133,9 @@ export default function RatesTab({ listingId, goNextTab }) {
   ================================ */
   const deleteRate = async (index) => {
     try {
-      const res = await api.put(
-        `/listings/${listingId}/rates/delete`,
-        { index }
-      );
+      const res = await api.put(`/listings/${listingId}/rates/delete`, {
+        index,
+      });
       setRates(res.data.rates);
     } catch {
       showModal("Delete failed");
@@ -138,20 +147,12 @@ export default function RatesTab({ listingId, goNextTab }) {
   ================================ */
   const saveExtraFee = async () => {
     try {
-      const url =
-        editFeeIndex !== null
-          ? "/extra-fees/edit"
-          : "/extra-fees";
+      const url = editFeeIndex !== null ? "/extra-fees/edit" : "/extra-fees";
 
       const payload =
-        editFeeIndex !== null
-          ? { index: editFeeIndex, fee: feeForm }
-          : feeForm;
+        editFeeIndex !== null ? { index: editFeeIndex, fee: feeForm } : feeForm;
 
-      const res = await api.put(
-        `/listings/${listingId}${url}`,
-        payload
-      );
+      const res = await api.put(`/listings/${listingId}${url}`, payload);
 
       setExtraFees(res.data);
       setFeeForm(emptyFee);
@@ -166,17 +167,16 @@ export default function RatesTab({ listingId, goNextTab }) {
      DELETE EXTRA FEE
   ================================ */
   const deleteExtraFee = async (index) => {
-    const res = await api.put(
-      `/listings/${listingId}/extra-fees/delete`,
-      { index }
-    );
+    const res = await api.put(`/listings/${listingId}/extra-fees/delete`, {
+      index,
+    });
     setExtraFees(res.data);
   };
 
   /* ===============================
      SUMMARY
   ================================ */
-  const nightlyRates = rates.map(r => Number(r.nightly)).filter(Boolean);
+  const nightlyRates = rates.map((r) => Number(r.nightly)).filter(Boolean);
 
   const minNightly = nightlyRates.length ? Math.min(...nightlyRates) : 0;
   const maxNightly = nightlyRates.length ? Math.max(...nightlyRates) : 0;
@@ -186,97 +186,197 @@ export default function RatesTab({ listingId, goNextTab }) {
 
   const minNightsOverall =
     rates.length > 0
-      ? Math.min(...rates.map(r => Number(r.minNights || 0)))
+      ? Math.min(...rates.map((r) => Number(r.minNights || 0)))
       : 0;
 
   return (
     <div className="bg-[#fff] p-6 rounded-xl space-y-10">
-
       {/* ================= RENTAL RATES ================= */}
       <div>
-        <h2 className="text-blue-700 text-2xl font-semibold mb-4">
-           Rates
-        </h2>
+        <h2 className="text-blue-700 text-2xl font-semibold mb-4">Rates</h2>
 
-       <div className="grid grid-cols-8 gap-2 text-sm">
+        <div className="grid grid-cols-8 gap-2 text-sm">
+          {/* SEASON */}
+          <input
+            type="text"
+            placeholder="season"
+            className="border p-2"
+            value={form.season}
+            onChange={(e) => setForm({ ...form, season: e.target.value })}
+          />
 
-  {/* SEASON */}
-  <input
-    type="text"
-    placeholder="season"
-    className="border p-2"
-    value={form.season}
-    onChange={e => setForm({ ...form, season: e.target.value })}
-  />
-
-  {/* FROM DATE */}
-<DatePicker
+          {/* FROM DATE */}
+       <DatePicker
   selected={form.from}
-  onChange={(date) => setForm({ ...form, from: date })}
+
+  onChange={(date) =>
+    setForm({
+      ...form,
+      from: date,
+    })
+  }
+
+  onChangeRaw={(e) => {
+
+    let value = e.target.value;
+
+    // convert - to /
+    value = value.replaceAll("-", "/");
+
+    e.target.value = value;
+
+    const parts = value.split("/");
+
+    if (parts.length === 3) {
+
+      const [month, day, year] = parts;
+
+      if (
+        month.length === 2 &&
+        day.length === 2 &&
+        year.length === 4
+      ) {
+
+        const parsed = new Date(
+          Number(year),
+          Number(month) - 1,
+          Number(day),
+          12
+        );
+
+        if (!isNaN(parsed)) {
+
+          setForm({
+            ...form,
+            from: parsed,
+          });
+        }
+      }
+    }
+  }}
+
   selectsStart
   startDate={form.from}
   endDate={form.to}
-  placeholderText="From"
+
+  dateFormat="MM/dd/yyyy"
+
+  placeholderText="MM/DD/YYYY"
+
   className="border p-2 w-full"
-  portalId="root" //  FIX
+
+  isClearable
+
+  portalId="root"
 />
 
-<DatePicker
+         <DatePicker
   selected={form.to}
-  onChange={(date) => setForm({ ...form, to: date })}
+
+  onChange={(date) =>
+    setForm({
+      ...form,
+      to: date,
+    })
+  }
+
+  onChangeRaw={(e) => {
+
+    let value = e.target.value;
+
+    value = value.replaceAll("-", "/");
+
+    e.target.value = value;
+
+    const parts = value.split("/");
+
+    if (parts.length === 3) {
+
+      const [month, day, year] = parts;
+
+      if (
+        month.length === 2 &&
+        day.length === 2 &&
+        year.length === 4
+      ) {
+
+        const parsed = new Date(
+          Number(year),
+          Number(month) - 1,
+          Number(day),
+          12
+        );
+
+        if (!isNaN(parsed)) {
+
+          setForm({
+            ...form,
+            to: parsed,
+          });
+        }
+      }
+    }
+  }}
+
   selectsEnd
   startDate={form.from}
   endDate={form.to}
+
   minDate={form.from}
-  placeholderText="To"
+
+  dateFormat="MM/dd/yyyy"
+
+  placeholderText="MM/DD/YYYY"
+
   className="border p-2 w-full"
-  portalId="root" //  FIX
+
+  isClearable
+
+  portalId="root"
 />
+          {/* NIGHTLY */}
+          <input
+            type="number"
+            placeholder="nightly"
+            className="border p-2"
+            value={form.nightly}
+            onChange={(e) => setForm({ ...form, nightly: e.target.value })}
+          />
 
-  {/* NIGHTLY */}
-  <input
-    type="number"
-    placeholder="nightly"
-    className="border p-2"
-    value={form.nightly}
-    onChange={e => setForm({ ...form, nightly: e.target.value })}
-  />
+          {/* WEEKLY */}
+          <input
+            type="number"
+            placeholder="weekly"
+            className="border p-2"
+            value={form.weekly}
+            onChange={(e) => setForm({ ...form, weekly: e.target.value })}
+          />
 
-  {/* WEEKLY */}
-  <input
-    type="number"
-    placeholder="weekly"
-    className="border p-2"
-    value={form.weekly}
-    onChange={e => setForm({ ...form, weekly: e.target.value })}
-  />
+          {/* MONTHLY */}
+          <input
+            type="number"
+            placeholder="monthly"
+            className="border p-2"
+            value={form.monthly}
+            onChange={(e) => setForm({ ...form, monthly: e.target.value })}
+          />
 
-  {/* MONTHLY */}
-  <input
-    type="number"
-    placeholder="monthly"
-    className="border p-2"
-    value={form.monthly}
-    onChange={e => setForm({ ...form, monthly: e.target.value })}
-  />
+          {/* MIN NIGHTS */}
+          <input
+            type="number"
+            placeholder="minNights"
+            className="border p-2"
+            value={form.minNights}
+            onChange={(e) => setForm({ ...form, minNights: e.target.value })}
+          />
 
-  {/* MIN NIGHTS */}
-  <input
-    type="number"
-    placeholder="minNights"
-    className="border p-2"
-    value={form.minNights}
-    onChange={e => setForm({ ...form, minNights: e.target.value })}
-  />
-
-  <button
-    onClick={addRate}
-    className="bg-blue-600 text-white rounded cursor-pointer"
-  >
-    Add
-  </button>
-
-</div>
+          <button
+            onClick={addRate}
+            className="bg-blue-600 text-white rounded cursor-pointer"
+          >
+            Add
+          </button>
+        </div>
 
         {rates.map((rate, i) => (
           <div
@@ -284,8 +384,9 @@ export default function RatesTab({ listingId, goNextTab }) {
             className="grid grid-cols-8 gap-2 border p-2 mt-2 bg-white rounded text-sm items-center"
           >
             <div>{rate.season}</div>
-            <div>{rate.from?.slice(0, 10)}</div>
-            <div>{rate.to?.slice(0, 10)}</div>
+            <div> {new Date(rate.from).toLocaleDateString("en-US")}</div>
+
+            <div> {new Date(rate.to).toLocaleDateString("en-US")}</div>
             <div>${rate.nightly}</div>
             <div>${rate.weekly}</div>
             <div>${rate.monthly}</div>
@@ -296,8 +397,8 @@ export default function RatesTab({ listingId, goNextTab }) {
                 onClick={() => {
                   setForm({
                     ...rate,
-                    from: rate.from?.slice(0, 10),
-                    to: rate.to?.slice(0, 10),
+                    from: new Date(rate.from),
+                    to: new Date(rate.to),
                   });
                   setEditRateIndex(i);
                 }}
@@ -371,10 +472,22 @@ export default function RatesTab({ listingId, goNextTab }) {
           <h3 className="font-semibold text-lg mb-3">Rate Summary</h3>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div><p>Min Nightly</p><b>${minNightly}</b></div>
-            <div><p>Max Nightly</p><b>${maxNightly}</b></div>
-            <div><p>Avg Nightly</p><b>${avgNightly}</b></div>
-            <div><p>Min Nights</p><b>{minNightsOverall}</b></div>
+            <div>
+              <p>Min Nightly</p>
+              <b>${minNightly}</b>
+            </div>
+            <div>
+              <p>Max Nightly</p>
+              <b>${maxNightly}</b>
+            </div>
+            <div>
+              <p>Avg Nightly</p>
+              <b>${avgNightly}</b>
+            </div>
+            <div>
+              <p>Min Nights</p>
+              <b>{minNightsOverall}</b>
+            </div>
           </div>
         </div>
       )}
@@ -391,20 +504,22 @@ export default function RatesTab({ listingId, goNextTab }) {
               className="border p-2 w-full mb-2"
               placeholder="Fee Name"
               value={feeForm.name}
-              onChange={e => setFeeForm({ ...feeForm, name: e.target.value })}
+              onChange={(e) => setFeeForm({ ...feeForm, name: e.target.value })}
             />
 
             <input
               className="border p-2 w-full mb-2"
               placeholder="Fee Value"
               value={feeForm.value}
-              onChange={e => setFeeForm({ ...feeForm, value: e.target.value })}
+              onChange={(e) =>
+                setFeeForm({ ...feeForm, value: e.target.value })
+              }
             />
 
             <select
               className="border p-2 w-full mb-2"
               value={feeForm.type}
-              onChange={e => setFeeForm({ ...feeForm, type: e.target.value })}
+              onChange={(e) => setFeeForm({ ...feeForm, type: e.target.value })}
             >
               <option value="$">$</option>
               <option value="%">%</option>
@@ -413,7 +528,9 @@ export default function RatesTab({ listingId, goNextTab }) {
             <select
               className="border p-2 w-full mb-4"
               value={feeForm.option}
-              onChange={e => setFeeForm({ ...feeForm, option: e.target.value })}
+              onChange={(e) =>
+                setFeeForm({ ...feeForm, option: e.target.value })
+              }
             >
               <option value="mandatory">Mandatory</option>
               <option value="optional">Optional</option>
@@ -437,7 +554,6 @@ export default function RatesTab({ listingId, goNextTab }) {
           </div>
         </div>
       )}
-
     </div>
   );
 }

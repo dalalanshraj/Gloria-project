@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { BedDouble, Bath, MapPin } from "lucide-react";
 
 const PropertyCard = ({ listing }) => {
   if (!listing) return null;
@@ -11,182 +12,85 @@ const PropertyCard = ({ listing }) => {
 
     if (path.startsWith("http")) return path;
 
-    return (
-      base.replace(/\/$/, "") + "/" + path.replace(/^\//, "")
-    );
+    return base.replace(/\/$/, "") + "/" + path.replace(/^\//, "");
   };
 
-  // IMAGE
   const image =
     listing?.photos?.length > 0
-      ? getImageUrl(listing.photos[0])
+      ? getImageUrl(listing.photos[0]) // ✅ index 0 use karo
       : "https://via.placeholder.com/400x300?text=No+Image";
 
-  // PRICE
   const originalPrice = listing?.rates?.[0]?.nightly || null;
   const dealPrice = listing?.deal?.discountedRate;
 
   return (
-    <Link to={`/${listing?._id}`} className="block h-full">
-      <div
-        className="
-          bg-white
-          rounded-2xl
-          shadow-md
-          hover:shadow-2xl
-          transition-all
-          duration-300
-          overflow-hidden
-          relative
-          h-full
-          flex
-          flex-col
-          group
-        "
-      >
-        {/* DEAL RIBBON */}
-        {listing?.deal && (
-          <div
-            className="
-              absolute
-              top-3
-              left-[-35px]
-              bg-orange-500
-              text-white
-              text-[10px]
-              sm:text-xs
-              font-semibold
-              px-10
-              py-1
-              rotate-[-45deg]
-              z-20
-              shadow-md
-            "
-          >
-            DEAL
-          </div>
-        )}
-
+    <Link to={`/${listing?._id}`}>
+      <div className="group bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition duration-500">
         {/* IMAGE */}
-        <div className="overflow-hidden">
+        <div className="relative overflow-hidden">
           <img
             src={image}
-            alt={listing?.property?.title || "Property"}
-            className="
-              w-full
-              h-52
-              sm:h-56
-              md:h-60
-              object-cover
-              transition-transform
-              duration-500
-              group-hover:scale-105
-            "
+            alt="property"
+            className="w-full h-[240px] object-cover transition duration-700 group-hover:scale-110"
+            onError={(e) => {
+              e.target.src =
+                "https://via.placeholder.com/400x300?text=No+Image";
+            }}
           />
-        </div>
 
-        {/* CONTENT */}
-        <div
-          className="
-            p-4
-            sm:p-5
-            flex
-            flex-col
-            flex-grow
-          "
-        >
-          {/* TITLE */}
-          <h3
-            className="
-              text-lg
-              sm:text-xl
-              font-semibold
-              leading-snug
-              mb-2
-              line-clamp-2
-            "
-          >
-            {listing?.property?.title ?? "Property"}
-          </h3>
+          {/* Gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
 
-          {/* CATEGORY */}
-          <p
-            className="
-              text-gray-600
-              text-sm
-              sm:text-base
-              mb-3
-            "
-          >
-            {listing?.property?.category ?? "Vacation Rental"}
-          </p>
+          {/* DEAL BADGE */}
+          {listing?.deal && (
+            <div className="absolute top-4 left-4 bg-orange-500 text-white text-xs px-3 py-1 rounded-full shadow">
+              DEAL
+            </div>
+          )}
 
           {/* PRICE */}
-          <div className="mb-4">
+          <div className="absolute bottom-4 left-4 text-white">
             {listing?.deal ? (
-              <div className="flex items-center flex-wrap gap-2">
-                <span
-                  className="
-                    text-red-500
-                    font-bold
-                    text-lg
-                    sm:text-xl
-                  "
-                >
+              <div className="flex items-center gap-2">
+                <span className="text-xl font-bold">
                   ${listing.deal.discountedRate}
                 </span>
-
-                <span
-                  className="
-                    line-through
-                    text-gray-400
-                    text-sm
-                  "
-                >
+                <span className="line-through text-sm opacity-70">
                   ${originalPrice}
                 </span>
               </div>
             ) : (
-              <span
-                className="
-                  text-[#44AAD8]
-                  font-semibold
-                  text-base
-                  sm:text-lg
-                "
-              >
-                {typeof originalPrice === "number"
-                  ? `$${originalPrice} / Night`
-                  : "Call for price"}
+              <span className="text-xl font-semibold">
+                {/* ${originalPrice || "Call"} */}
               </span>
             )}
           </div>
+        </div>
 
-          {/* BUTTON */}
-          <div className="mt-auto">
-            <span
-              className="
-                inline-flex
-                items-center
-                justify-center
-                w-full
-                sm:w-auto
-                px-5
-                py-3
-                rounded-xl
-                bg-[#F8F812]
-                text-black
-                font-semibold
-                text-sm
-                sm:text-base
-                transition-all
-                duration-300
-                hover:bg-[#1B252F]
-                hover:text-white
-              "
-            >
-              View Details →
-            </span>
+        {/* CONTENT */}
+        <div className="p-4">
+          {/* TITLE */}
+          <h3 className="text-lg font-semibold mb-1 group-hover:text-black transition">
+            {listing?.property?.title || "Luxury Property"}
+          </h3>
+
+          {/* LOCATION */}
+          <div className="flex items-center text-gray-500 text-sm mb-2 gap-1">
+            <MapPin className="font-bold" color="green" size={18} />
+            {listing?.location?.address || "Beach Area"}
+          </div>
+
+          {/* FEATURES */}
+          <div className="flex items-center justify-between text-gray-600 text-sm mt-3">
+            <div className="flex items-center gap-1">
+              <BedDouble color="green" size={16} />
+              <span>{listing?.property?.bedrooms || 3} Beds</span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <Bath color="green" size={16} />
+              <span>{listing?.property.bathrooms || 2} Baths</span>
+            </div>
           </div>
         </div>
       </div>

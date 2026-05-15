@@ -9,7 +9,7 @@ export default function GallerySection() {
   const [loading, setLoading] = useState(true);
 
   const BASE_URL =
-    import.meta.env.VITE_API_URL || "https://donnadaniel.mysawgrasspointe.com/";
+    import.meta.env.VITE_API_URL || "https://30anickoftime.com/";
 
   const getImageUrl = (path) => {
     if (!path || typeof path !== "string") return "";
@@ -75,8 +75,11 @@ export default function GallerySection() {
 
   return (
     <section className="w-full py-12 px-6 md:px-16">
-      
-      <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-sky-900 text-center leading-tight mb-5">
+      <p className="uppercase text-xs text-center tracking-[3px] text-[#2f9bad]
+  mb-3">
+        Gallery
+      </p>
+      <h2 className="text-3xl text-center md:text-5xl font-semibold text-gray-800 mb-8">
         Property Gallery
       </h2>
 
@@ -134,7 +137,7 @@ export default function GallerySection() {
         <div className="flex justify-center mt-14">
     <button
       onClick={() => setOpen(true)}
-      className="px-8 py-3 rounded-full  text-black font-medium shadow-md bg-[#F8F812]  hover:bg-[#1B252F] hover:text-white hover:scale-105  transition duration-300"
+      className="px-8 py-3 rounded-full bg-[#FFE8BE] text-black font-medium shadow-md hover:scale-105  transition duration-300"
     >
       View More  →
     </button>

@@ -1,211 +1,203 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import AboutSection from "../components/homeSection/About";
+import InfoSection from "../components/homeSection/InfoSection";
+import Properties from "./Properties";
+import GallerySection from "../components/gallarySection";
+import AmenitiesSection from "../components/homeSection/amenitiesSection";
 import api from "../api/axios.js";
-import FeaturedActivities from "../components/homeSection/FeaturedActivities";
-import DiscoverDestinSection from "../components/homeSection/DiscoverDestin";
-import DatePicker from "react-datepicker";
-import PropertyCard from "../components/PropertyCard";
-import AboutSection from "../components/homeSection/AboutSection.jsx";
-import heroVideo from "../assets/video.mp4"
-import GallerySection from "../components/gallarySection.jsx";
 
-const HeroSection = ({listingId}) => {
-  const [formData, setFormData] = useState({
-    checkIn: "",
-    checkOut: "",
-    guests: "1",
-  });
+import bgImage from "../assets/img.png";
+import bgImagetwo from "../assets/img3.png";
+import imgthree from "../assets/4-2.jpg";
 
-  const [error, setError] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
-  const [listings, setListings] = useState([]);
+import BookingModalContact from "../components/bookingModel.jsx";
+import FeesTable from "../components/FeesTable.jsx";
+import ReviewsSection from "../components/ReviewsSection.jsx";
+import { Link } from "react-router-dom";
 
-  const formatDate = (date) => {
-    if (!date) return "";
-    return date.toISOString().split("T")[0];
-  };
+export default function Hero({listingId}) {
+  const [offset, setOffset] = useState(0);
+  const [featured, setFeatured] = useState(null);
+  const [open, setOpen] = useState(false);
+  // const [listing, setListing] = useState(null);
 
-  
+  const BASE_URL = import.meta.env.VITE_API_URL;
 
-  const handleSearch = (e) => {
-    e.preventDefault();
+  // ✅ Helper (safe URL)
+  const getImageUrl = (path) => `${BASE_URL?.replace(/\/$/, "")}${path}`;
 
-    if (!formData.checkIn || !formData.checkOut) {
-      setError("Please select both dates");
-      setShowModal(true);
-      return;
-    }
-
-    const params = new URLSearchParams({
-      checkIn: formData.checkIn,
-      checkOut: formData.checkOut,
-    }).toString();
-
-    navigate(`/results?${params}`);
-  };
-
+  // ===========================
+  // FETCH FEATURED LISTING
+  // ===========================
   useEffect(() => {
-    if (showModal) {
-      const timer = setTimeout(() => setShowModal(false), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [showModal]);
-
-  useEffect(() => {
-    api.get("/listings/published")
+    api
+      .get("/listings/published")
       .then((res) => {
-        setListings(res.data.listings || res.data);
+        const data = res.data || [];
+        setFeatured(data[0]); // first listing
       })
-      .catch(console.error);
+      .catch(console.log);
+  }, []);
+
+  // ===========================
+  // DATA SAFE EXTRACTION
+  // ===========================
+  const image = featured?.photos?.[4]
+    ? getImageUrl(featured.photos[0])
+    : bgImagetwo;
+
+  const title = featured?.property?.title || "Luxury Villa";
+  const beds = featured?.property?.bedrooms || 4;
+  const baths = featured?.property?.bathrooms || 3;
+
+  const price =
+    featured?.deal?.discountedRate || featured?.rates?.[0]?.nightly || 320;
+
+  // ===========================
+  // PARALLAX
+  // ===========================
+  useEffect(() => {
+    const handleScroll = () => {
+      setOffset(window.scrollY * 0.3);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <>
-      {/* HERO */}
-      <section className="relative min-h-[70vh] md:min-h-[100vh] flex items-center justify-center text-center overflow-hidden">
-        
-        {/* VIDEO */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source
-            src={heroVideo}
-            type="video/mp4"
-          />
-        </video>
+      <section className="relative h-[75vh] md:h-[90vh] w-full overflow-hidden">
+        {/* BG */}
+        <div
+          className="absolute inset-0  pointer-events-none z-0"
+          style={{
+            transform: `translateY(${offset}px) scale(1.1)`,
+            backgroundImage: `url(${bgImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
 
-        {/* OVERLAY */}
-        <div className="absolute inset-0 bg-black/9"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/50 to-transparent" />
+        <div className="absolute inset-0 backdrop-blur-[1px]" />
 
         {/* CONTENT */}
-        <div className="relative z-10 text-white px-4 w-full max-w-6xl">
-          
-          {/* HEADING */}
-          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-semibold mb-4 leading-tight">
-            Destin, FL Vacation Rental
+        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between h-full px-6 md:px-16">
+          {/* LEFT */}
+          <div className="max-w-xl text-white mt-34 md:mt-24">
+            {/* <p className="uppercase tracking-widest font-bold text-[#2f9bad] text-xs mb-4">
+              Luxury Vacation Homes
+            </p> */}
+
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              Luxury Oceanfront Condo with Stunning Sunset Views in Panama City
+              Beach
             </h1>
 
-          <p className="text-sm sm:text-base md:text-lg mb-6 md:mb-10">
-            Rental Property Management and Vacation Rentals in Okaloosa and Walton County
-          </p>
-
-          {/* FORM */}
-          <form
-            onSubmit={handleSearch}
-            className="bg-white text-black rounded-xl shadow-xl p-4 md:p-5  w-[95%] max-w-3xl mx-auto
-            flex flex-col md:flex-row gap-3 md:gap-10 items-stretch md:items-center"
-          >
-            
-            {/* CHECK IN */}
-            <DatePicker
-              selected={formData.checkIn ? new Date(formData.checkIn) : null}
-              onChange={(date) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  checkIn: formatDate(date),
-                }))
-              }
-              placeholderText="Check In"
-              className="w-full border rounded-lg px-3 py-2"
-              minDate={new Date()}
-            />
-
-            {/* CHECK OUT */}
-            <DatePicker
-              selected={formData.checkOut ? new Date(formData.checkOut) : null}
-              onChange={(date) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  checkOut: formatDate(date),
-                }))
-              }
-              placeholderText="Check Out"
-              className="w-full border rounded-lg px-3 py-2"
-              minDate={
-                formData.checkIn
-                  ? new Date(formData.checkIn)
-                  : new Date()
-              }
-            />
-
-            {/* GUESTS */}
-            <select
-              name="guests"
-              value={formData.guests}
-              onChange={(e) =>
-                setFormData({ ...formData, guests: e.target.value })
-              }
-              className="w-full md:w-[150px] border rounded-lg px-3 py-2"
-            >
-              {[...Array(10)].map((_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {i + 1} Guest{i > 0 ? "s" : ""}
-                </option>
-              ))}
-            </select>
-
-            {/* BUTTON */}
-            <button
-              type="submit"
-              className="bg-[#F8F812] text-black shadow-sm px-6 py-2 rounded-lg 
-              hover:bg-[#1B252F] hover:text-white transition w-full md:w-auto"
-            >
-              Search
-            </button>
-          </form>
-        </div>
-      </section>
-      <div className="py-16 bg-white">
-
-  <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-sky-900 text-center leading-tight">
-    Available Vacation Rentals
-  </h2>
-
-  <p className="text-center text-gray-500 max-w-2xl mx-auto mb-12">
-    Experience the serene allure of the coast while enjoying the comfort and luxury our homes provide.
-  </p>
-
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-10">
-    {(listings || []).slice(0, 4).map((listing) => (
-      <PropertyCard key={listing._id} listing={listing} />
-    ))}
-  </div>
-</div>
-
-
-      <FeaturedActivities />
-      <AboutSection listingId="69fa0b19d8b673e7d4bf1637" />
-      {/* <DiscoverDestinSection /> */}
-      <GallerySection />
-
-      {/* MODAL */}
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center 
-        bg-black/30 backdrop-blur-sm z-50">
-
-          <div className="bg-white p-6 rounded-xl shadow-xl w-[90%] max-w-sm text-center">
-            <h2 className="text-lg font-semibold text-red-600 mb-2">
-              Notice
-            </h2>
-
-            <p className="text-gray-700 mb-4">{error}</p>
+            <p className="text-gray-300 mb-8">
+              Enjoy a relaxing beachfront escape featuring two king suites,
+              resort-style amenities, breathtaking ocean views, live music, fire
+              pits, and complimentary beach chairs & umbrella.
+            </p>
 
             <button
-              onClick={() => setShowModal(false)}
-              className="bg-red-500 text-white px-5 py-2 rounded-lg hover:bg-red-600"
+              onClick={() => {
+                
+                setOpen(true);
+              }}
+              className="px-6 py-3 bg-[#FFE8BE] text-black rounded-full font-semibold hover:scale-105 transition"
             >
-              Close
+              Book Now
             </button>
           </div>
+
+          {/* FLOATING CARD */}
+          <div className="hidden md:flex relative">
+            <div className="absolute -inset-4 bg-[#FFE8BE]/20 blur-2xl rounded-3xl"></div>
+
+            <div className="relative bg-white/10 backdrop-blur-2xl rounded-3xl p-4 shadow-2xl animate-float">
+              <img
+                src={image}
+                alt="villa"
+                className="rounded-2xl w-[420px] h-[260px] object-cover"
+              />
+
+              <div className="absolute bottom-4 left-4 right-4 bg-white/90 rounded-xl p-3 flex justify-between items-center">
+                <div>
+                  <p className="text-sm font-semibold">{title}</p>
+                  <p className="text-xs text-gray-500">
+                    {beds} Beds • {baths} Baths
+                  </p>
+                </div>
+
+                {/* <span className="text-sm font-bold">${price}/night</span> */}
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* ANIMATION */}
+        <style>
+          {`
+          .animate-float {
+            animation: float 6s ease-in-out infinite;
+          }
+          @keyframes float {
+            0%,100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+          }
+        `}
+        </style>
+      </section>
+
+      {/* MODAL */}
+      {open && featured && (
+        <BookingModalContact
+          onClose={() => setOpen(false)}
+          listingId={featured._id}
+        />
       )}
+      {/* OTHER SECTIONS */}
+      <AboutSection listingId="6a04c24a43652c16fdde1a52" />
+      {/* <FeesTable /> */}
+      {/* <InfoSection /> */}
+      <Properties />
+
+      <section className="py-16 px-6 md:px-16 bg-white">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+          <img
+            src={imgthree}
+            className="rounded-2xl w-full h-[400px] object-cover"
+          />
+
+          <div>
+            <p className="uppercase text-xs tracking-[3px] text-[#2f9bad] mb-3">
+              Premium Vacation
+            </p>
+            <h3 className="text-3xl md:text-5xl font-semibold text-gray-800 mb-8">
+              Premium Vacation Rental Homes
+            </h3>
+            <p className="text-gray-600">
+              Enjoy a relaxing beachfront escape in our beautifully designed
+              vacation condo, perfect for families, couples, and group getaways.
+              This spacious property features comfortable king suites, modern
+              amenities, a fully equipped kitchen, and inviting living spaces
+              designed for comfort and convenience. Wake up to breathtaking
+              ocean views, unwind with stunning sunsets from your private
+              balcony, and enjoy resort-style amenities including beach access,
+              fire pits, a tiki bar, and live entertainment. Located in the
+              heart of Panama City Beach near popular restaurants, shopping, and
+              attractions, this condo offers the perfect combination of luxury,
+              relaxation, and coastal charm for an unforgettable vacation
+              experience.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <AmenitiesSection listingId="6a04c24a43652c16fdde1a52" />
+      <GallerySection />
+      <ReviewsSection  listingId="6a04c24a43652c16fdde1a52"/>
     </>
   );
-};
-
-export default HeroSection;
+}
