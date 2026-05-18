@@ -79,16 +79,18 @@ export default function Footer({listingId}) {
           {/* CONTACT */}
           <div>
             <h3 className="font-semibold mb-4">Contact</h3>
-            <div className="space-y-3 text-white text-sm">
-              <div className="flex items-center gap-2">
-                <FiPhone />
-                <span>{contactNumber}</span>
-              </div>
+            <div className="space-y-3 text-black text-sm">
+              <Link to="/admin/login">
+              <button className="bg-[#FFE8BE] hover:scale-105 transition text-sm font-medium px-4 py-2 rounded shadow flex items-center gap-2 mt-1">
+                <MdEmail />
+                Admin Login
+              </button>
+            </Link> 
 
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <FiMail />
                 <span>{email}</span>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -104,12 +106,7 @@ a51%3A0x21a40f55ed13dc05!2s15902%20FL-30%2C%20Panama%20City%20Beach%2C%20FL%203
          
         </iframe>
 
-                           {/* <Link to="/admin/login">
-              <button className="bg-[#FFE8BE] hover:bg-[#2f9bad] text-sm font-medium px-4 py-2 rounded shadow flex items-center gap-2 mt-1">
-                <MdEmail />
-                Admin Login
-              </button>
-            </Link> */}
+                           
 
             {/* <div className="flex gap-4">
               <a

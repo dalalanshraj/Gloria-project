@@ -30,23 +30,23 @@ router.put("/users/:id", updateUser);
 router.delete("/users/:id", isAuth, isAdmin, deleteUser);
 router.put( "/change-password",isAuth, isAdmin, changePassword)
 router.put("/users/:id/reset-password",isAuth, isAdmin,resetUserPassword)
-// router.get("/fix-password", async (req, res) => {
+router.get("/fix-password", async (req, res) => {
 
-//   const user = await User.findOne({
-//     email: "digifyamerica@gmail.com"
-//   });
+  const user = await User.findOne({
+    email: "digifyamerica@gmail.com"
+  });
 
-//   const hashed = await bcrypt.hash(
-//     "Admin@123",
-//     10
-//   );
+  const hashed = await bcrypt.hash(
+    "Admin@123",
+    10
+  );
 
-//   user.password = hashed;
+  user.password = hashed;
 
-//   await user.save();
+  await user.save();
 
-//   res.send("Password fixed");
-// });
+  res.send("Password fixed");
+});
 
 
 
