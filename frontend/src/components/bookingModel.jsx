@@ -8,6 +8,7 @@ import modelImg from "../assets/img3.png";
 
 export default function BookingModalContact({ listingId, onClose }) {
   const [calendarDates, setCalendarDates] = useState([]);
+  
 
   const [selecting, setSelecting] = useState("checkIn");
 

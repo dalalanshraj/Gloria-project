@@ -3,115 +3,103 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import api from "../api/axios";
 
-export default function PropertyminiCalendar() {
+export default function PropertyminiCalendar({ listingId }) {
 
-  const [blockedDates, setBlockedDates] = useState([]);
+ const [calendarDates, setCalendarDates] =
+  useState([]);
 
-  // =====================================
-  // FETCH DATES
-  // =====================================
+useEffect(() => {
 
-  useEffect(() => {
+  if (listingId) {
     fetchDates();
-  }, []);
+  }
 
-  const fetchDates = () => {
+}, [listingId]);
 
-    api
-      .get("/calendar/blocked")
-      .then((res) =>
-        setBlockedDates(res.data)
-      )
-      .catch(console.log);
+const fetchDates = async () => {
 
-  };
+  try {
 
+    const res = await api.get(
+      `/calendar/${listingId}/calendar`
+    );
+
+    setCalendarDates(
+      res.data.calendar || []
+    );
+
+  } catch (err) {
+
+    console.log(err);
+
+  }
+
+};
   // =====================================
   // FORMAT DATE
   // =====================================
 
   const formatLocalDate = (date) => {
 
-    return new Intl.DateTimeFormat(
-      "en-CA",
-      {
-        timeZone: "America/Chicago",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      }
-    ).format(new Date(date));
+  const d = new Date(date);
 
-  };
+  if (isNaN(d)) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat(
+    "en-CA",
+    {
+      timeZone: "America/Chicago",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }
+  ).format(d);
+
+};
 
   // =====================================
   // BLOCKED MAP
   // =====================================
 
-  const blockedMap = useMemo(() => {
+const blockedMap = useMemo(() => {
 
-    const map = {};
+  const map = {};
 
-    blockedDates.forEach((booking) => {
+  calendarDates.forEach((item) => {
 
-      const start = new Date(booking.start);
+    // INVALID DATE SKIP
+    if (!item?.date) return;
 
-      const end = new Date(booking.end);
+    const parsedDate =
+      new Date(item.date);
 
-      start.setHours(0, 0, 0, 0);
+    if (isNaN(parsedDate)) return;
 
-      end.setHours(0, 0, 0, 0);
-
-      // CHECK-IN
-      const startKey =
-        formatLocalDate(start);
-
-      if (!map[startKey]) {
-        map[startKey] = [];
-      }
-
-      map[startKey].push("CIN");
-
-      // CHECK-OUT
-      const endKey =
-        formatLocalDate(end);
-
-      if (!map[endKey]) {
-        map[endKey] = [];
-      }
-
-      map[endKey].push("COUT");
-
-      // BOOKED DAYS
-      const temp =
-        new Date(start);
-
-      temp.setDate(
-        temp.getDate() + 1
-      );
-
-      while (temp < end) {
-
-        const bookedKey =
-          formatLocalDate(temp);
-
-        if (!map[bookedKey]) {
-          map[bookedKey] = [];
+    const itemDate = new Date(
+      parsedDate.toLocaleString(
+        "en-US",
+        {
+          timeZone: "America/Chicago",
         }
+      )
+    );
 
-        map[bookedKey].push("R");
+    const key =
+      formatLocalDate(itemDate);
 
-        temp.setDate(
-          temp.getDate() + 1
-        );
+    if (!map[key]) {
+      map[key] = [];
+    }
 
-      }
+    map[key].push(item.status);
 
-    });
+  });
 
-    return map;
+  return map;
 
-  }, [blockedDates]);
+}, [calendarDates]);
 
   // =====================================
   // DATE TYPE

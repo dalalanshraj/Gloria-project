@@ -323,7 +323,7 @@ const PropertyDetail = () => {
 
         <div className="lg:col-span-1">
           <div className="sticky top-[100px] bg-white rounded-3xl shadow-xl p-6 ">
-            <PropertyminiCalendar />
+           <PropertyminiCalendar listingId={listing._id} />
           </div>
         </div>
       </div>
