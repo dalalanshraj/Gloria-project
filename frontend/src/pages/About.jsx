@@ -308,7 +308,7 @@ export default function About() {
           >
             About
             <br />
-            Reel Paradise
+           Stunning Sunset Views
           </h1>
 
           <p
