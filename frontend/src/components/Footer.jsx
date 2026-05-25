@@ -44,10 +44,10 @@ export default function Footer({ listingId }) {
     <footer className="bg-black text-white mt-20">
       {/* ================= MAP ================= */}
 
-      <div className="w-full h-[500px] overflow-hidden">
+      <div className="w-full h-[240px] overflow-hidden">
         <iframe
           src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d873.5075493519123!2d-85.80502213039706!3d30.17657209842859!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8893891dea520c1f%3A0x6d3694878ccb8cb!2sWash%20Wizards!5e1!3m2!1sen!2sin!4v1779500259298!5m2!1sen!2sin`}
-          className="w-full h-full border-0"
+          className="w-full h-100 border-0"
           allowFullScreen=""
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
