@@ -4,8 +4,7 @@ import api from "../api/axios";
 export default function ReviewsSection({ listingId }) {
   const [open, setOpen] = useState(false);
 
-  const [reviews, setReviews] =
-    useState([]);
+  const [reviews, setReviews] = useState([]);
 
   // FETCH REVIEWS FROM LISTING
   useEffect(() => {
@@ -14,25 +13,16 @@ export default function ReviewsSection({ listingId }) {
     api
       .get(`/listings/${listingId}`)
       .then((res) => {
-
-        console.log(
-          "FULL LISTING:",
-          res.data
-        );
+        console.log("FULL LISTING:", res.data);
 
         // 👇 YOUR REVIEWS ARRAY
-        const data =
-          res.data?.reviews ||
-          res.data?.listing?.reviews ||
-          [];
+        const data = res.data?.reviews || res.data?.listing?.reviews || [];
 
         setReviews(data);
-
       })
       .catch((err) => {
         console.log(err);
       });
-
   }, [listingId]);
 
   // PREVIEW
@@ -40,13 +30,9 @@ export default function ReviewsSection({ listingId }) {
 
   return (
     <section className="bg-[#f5f5f5] py-20 px-6 md:px-16">
-
       <div className="max-w-6xl mx-auto">
-
         {/* HEADER */}
         <div className="mb-14 text-center">
-         
-
           <h2
             className="
            font-playfair text-5xl md:text-7xl font-bold
@@ -58,14 +44,11 @@ export default function ReviewsSection({ listingId }) {
 
         {/* NO REVIEWS */}
         {reviews.length === 0 ? (
-          <div className="text-center text-gray-500">
-            No reviews available
-          </div>
+          <div className="text-center text-gray-500">No reviews available</div>
         ) : (
           <>
             {/* REVIEWS GRID */}
             <div className="grid md:grid-cols-2 gap-8">
-
               {/* BIG REVIEW */}
               <div
                 className="
@@ -92,12 +75,9 @@ export default function ReviewsSection({ listingId }) {
                 ></div>
 
                 <div className="relative">
-
                   {/* STARS */}
                   <div className="text-yellow-500 text-lg mb-3">
-                    {"★".repeat(
-                      preview[0]?.rating || 5
-                    )}
+                    {"★".repeat(preview[0]?.rating || 5)}
                   </div>
 
                   {/* MESSAGE */}
@@ -113,7 +93,6 @@ export default function ReviewsSection({ listingId }) {
 
                   {/* USER */}
                   <div className="mt-6 flex items-center gap-3">
-
                     <div
                       className="
                       w-10 
@@ -135,35 +114,29 @@ export default function ReviewsSection({ listingId }) {
                         {preview[0]?.name}
                       </p>
 
-                    <p className="text-sm text-gray-400">
-  {preview[0]?.stayDate
-    ? new Date(
-        preview[0].stayDate
-      ).toLocaleDateString(
-        "en-US",
-        {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-        }
-      )
-    : ""}
-</p>
+                      <p className="text-sm text-gray-400">
+                        {preview[0]?.stayDate
+                          ? new Date(preview[0].stayDate).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric",
+                              },
+                            )
+                          : ""}
+                      </p>
                     </div>
-
                   </div>
                 </div>
               </div>
 
               {/* SMALL REVIEWS */}
               <div className="flex flex-col gap-6">
-
-                {preview
-                  .slice(1)
-                  .map((r, i) => (
-                    <div
-                      key={i}
-                      className="
+                {preview.slice(1).map((r, i) => (
+                  <div
+                    key={i}
+                    className="
                       bg-white 
                       p-6 
                       rounded-2xl 
@@ -173,30 +146,22 @@ export default function ReviewsSection({ listingId }) {
                       transition 
                       duration-300
                     "
-                    >
+                  >
+                    {/* STARS */}
+                    <div className="text-yellow-500 mb-2 text-sm">
+                      {"★".repeat(r?.rating || 5)}
+                    </div>
 
-                      {/* STARS */}
-                      <div className="text-yellow-500 mb-2 text-sm">
-                        {"★".repeat(
-                          r?.rating || 5
-                        )}
-                      </div>
+                    {/* TITLE */}
+                    <h4 className="font-semibold text-lg mb-2">{r?.title}</h4>
 
-                      {/* TITLE */}
-                      <h4 className="font-semibold text-lg mb-2">
-                        {r?.title}
-                      </h4>
+                    {/* MESSAGE */}
+                    <p className="text-gray-600 text-sm">{r?.message}</p>
 
-                      {/* MESSAGE */}
-                      <p className="text-gray-600 text-sm">
-                        {r?.message}
-                      </p>
-
-                      {/* USER */}
-                      <div className="mt-4 flex items-center gap-2">
-
-                        <div
-                          className="
+                    {/* USER */}
+                    <div className="mt-4 flex items-center gap-2">
+                      <div
+                        className="
                           w-8 
                           h-8 
                           bg-gray-200 
@@ -207,45 +172,48 @@ export default function ReviewsSection({ listingId }) {
                           text-sm 
                           font-bold
                         "
-                        >
-                          {r?.name?.charAt(0)}
-                        </div>
+                      >
+                        {r?.name?.charAt(0)}
+                      </div>
 
-                        <div>
-                          <p
-                            className="
+                      <div>
+                        <p
+                          className="
                             font-semibold 
                             text-gray-800 
                             text-sm
                           "
-                          >
-                            {r?.name}
-                          </p>
+                        >
+                          {r?.name}
+                        </p>
 
-                          <p className="text-xs text-gray-400">
-                            {r?.stayDate}
-                          </p>
-                        </div>
-
+                        <p className="text-sm text-gray-400">
+                          {preview[0]?.stayDate
+                            ? new Date(preview[0].stayDate).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "long",
+                                  day: "numeric",
+                                  year: "numeric",
+                                },
+                              )
+                            : ""}
+                        </p>
                       </div>
                     </div>
-                  ))}
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* BUTTON */}
             <div className="flex justify-center mt-14">
-
               <button
-                onClick={() =>
-                  setOpen(true)
-                }
+                onClick={() => setOpen(true)}
                 className="px-12 py-4 bg-black text-white uppercase tracking-[4px] text-sm hover:bg-blue-500 transition-all duration-500"
-         
               >
                 View All Reviews →
               </button>
-
             </div>
           </>
         )}
@@ -265,7 +233,6 @@ export default function ReviewsSection({ listingId }) {
           px-4
         "
         >
-
           <div
             className="
             bg-white 
@@ -277,7 +244,6 @@ export default function ReviewsSection({ listingId }) {
             shadow-xl
           "
           >
-
             {/* TOP */}
             <div
               className="
@@ -292,9 +258,7 @@ export default function ReviewsSection({ listingId }) {
               </h3>
 
               <button
-                onClick={() =>
-                  setOpen(false)
-                }
+                onClick={() => setOpen(false)}
                 className="
                 text-2xl 
                 text-gray-600 
@@ -314,7 +278,6 @@ export default function ReviewsSection({ listingId }) {
               pr-2
             "
             >
-
               {reviews.map((r, i) => (
                 <div
                   key={i}
@@ -327,12 +290,9 @@ export default function ReviewsSection({ listingId }) {
                   transition
                 "
                 >
-
                   {/* STARS */}
                   <div className="text-yellow-500 text-lg mb-2">
-                    {"★".repeat(
-                      r?.rating || 5
-                    )}
+                    {"★".repeat(r?.rating || 5)}
                   </div>
 
                   {/* TITLE */}
@@ -357,25 +317,21 @@ export default function ReviewsSection({ listingId }) {
                   </p>
 
                   {/* DATE */}
-                 <p className="text-sm text-gray-400">
-  {preview[0]?.stayDate
-    ? new Date(
-        preview[0].stayDate
-      ).toLocaleDateString(
-        "en-US",
-        {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-        }
-      )
-    : ""}
+                  <p className="text-sm text-gray-400">
+                    {preview[0]?.stayDate
+                      ? new Date(preview[0].stayDate).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          },
+                        )
+                      : ""}
                   </p>
-                  
 
                   {/* USER */}
                   <div className="mt-4 flex items-center gap-2">
-
                     <div
                       className="
                       w-10 
@@ -401,11 +357,9 @@ export default function ReviewsSection({ listingId }) {
                     >
                       {r?.name}
                     </p>
-
                   </div>
                 </div>
               ))}
-
             </div>
           </div>
         </div>
