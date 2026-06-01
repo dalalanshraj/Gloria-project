@@ -287,7 +287,7 @@ export default function Contact({ listingId }) {
       <div className="max-w-7xl mx-auto px-5 md:px-10">
         {/* HEADING */}
 
-        <div className="text-center mb-20">
+        <div className="text-center mb-20 mt-17 md:mt-10">
           <p className="uppercase tracking-[6px] text-gray-400 text-xs md:text-sm mb-6">
             Contact & Booking
           </p>

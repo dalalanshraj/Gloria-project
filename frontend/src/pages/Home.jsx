@@ -82,7 +82,7 @@ export default function Hero({listingId}) {
     <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6 ">
         
   {/* Small Subtitle */}
-  <p className="uppercase tracking-[6px] text-white/80 text-sm md:text-base mt-5">
+  <p className="uppercase tracking-[6px] text-white/80 text-[10px]  md:text-base mt-5  md:mt-0">
     Luxury Penthouse Condo
   </p>
 

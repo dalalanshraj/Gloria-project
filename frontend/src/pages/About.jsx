@@ -2,40 +2,20 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 
 export default function About() {
-
-  const [images, setImages] =
-    useState([]);
+  const [images, setImages] = useState([]);
 
   // =====================================
   // IMAGE URL
   // =====================================
 
-  const getImageUrl = (
-    path
-  ) => {
+  const getImageUrl = (path) => {
+    if (!path || typeof path !== "string") return "";
 
-    if (
-      !path ||
-      typeof path !== "string"
-    )
-      return "";
+    const base = import.meta.env.VITE_API_URL || "";
 
-    const base =
-      import.meta.env
-        .VITE_API_URL || "";
+    if (path.startsWith("http")) return path;
 
-    if (
-      path.startsWith(
-        "http"
-      )
-    )
-      return path;
-
-    return (
-      base.replace(/\/$/, "") +
-      "/" +
-      path.replace(/^\//, "")
-    );
+    return base.replace(/\/$/, "") + "/" + path.replace(/^\//, "");
   };
 
   // =====================================
@@ -43,46 +23,29 @@ export default function About() {
   // =====================================
 
   useEffect(() => {
-
     api
-      .get(
-        "/gallery/published"
-      )
+      .get("/gallery/published")
 
       .then((res) => {
-
-        const data =
-          res.data || [];
+        const data = res.data || [];
 
         setImages(data);
-
       })
 
       .catch(console.log);
-
   }, []);
 
   // =====================================
   // GET SECTION IMAGE
   // =====================================
 
-  const getSectionImage = (
-    type
-  ) => {
-
-    const found =
-      images.find(
-        (img) =>
-          img.sectionType ===
-            type &&
-          img.status ===
-            "published"
-      );
+  const getSectionImage = (type) => {
+    const found = images.find(
+      (img) => img.sectionType === type && img.status === "published",
+    );
 
     return found
-      ? getImageUrl(
-          found.image
-        )
+      ? getImageUrl(found.image)
       : "https://images.unsplash.com/photo-1505691938895-1758d7feb511";
   };
 
@@ -92,131 +55,91 @@ export default function About() {
 
   const sections = [
     {
-      title:
-        "THE PENTHOUSE",
+      title: "THE PENTHOUSE",
 
-      subtitle:
-        "Luxury Gulf View Condo",
+      subtitle: "Luxury Gulf View Condo",
 
       description:
         "Welcome to our stunning 20th-floor penthouse at Laketown Wharf Resort, where breathtaking gulf views and luxury beachfront living create the perfect vacation experience.",
 
-      image:
-        getSectionImage(
-          "penthouse"
-        ),
+      image: getSectionImage("penthouse"),
     },
 
     {
-      title:
-        "PRIME LOCATION",
+      title: "PRIME LOCATION",
 
-      subtitle:
-        "Steps From The Beach",
+      subtitle: "Steps From The Beach",
 
       description:
         "Located just a short 3-minute walk from Panama City Beach’s famous white sandy beaches, the condo offers easy access to restaurants, shopping, entertainment, and endless coastal adventures.",
 
-      image:
-        getSectionImage(
-          "prime-location"
-        ),
+      image: getSectionImage("prime-location"),
     },
 
     {
-      title:
-        "LUXURY LIVING ROOM",
+      title: "LUXURY LIVING ROOM",
 
-      subtitle:
-        "Open & Elegant Space",
+      subtitle: "Open & Elegant Space",
 
       description:
         "Relax in the bright and airy living room featuring large windows, modern interiors, comfortable seating, natural sunlight, and direct balcony access with magical ocean and sunset views.",
 
-      image:
-        getSectionImage(
-          "living-room"
-        ),
+      image: getSectionImage("living-room"),
     },
 
     {
-      title:
-        "MASTER BEDROOM",
+      title: "MASTER BEDROOM",
 
-      subtitle:
-        "Private Gulf View Suite",
+      subtitle: "Private Gulf View Suite",
 
       description:
         "The luxurious master suite features a king-sized bed, elegant décor, flat-screen TV, spa-style bathroom, walk-in shower, and stunning gulf views directly from the bedroom.",
 
-      image:
-        getSectionImage(
-          "master-bedroom"
-        ),
+      image: getSectionImage("master-bedroom"),
     },
 
     {
-      title:
-        "GUEST BEDROOMS",
+      title: "GUEST BEDROOMS",
 
-      subtitle:
-        "Comfort For Everyone",
+      subtitle: "Comfort For Everyone",
 
       description:
         "Our spacious condo comfortably sleeps up to 12 guests with multiple king bedrooms, cozy guest suites, a bunk room, and a queen sleeper sofa perfect for families and large groups.",
 
-      image:
-        getSectionImage(
-          "guest-bedroom"
-        ),
+      image: getSectionImage("guest-bedroom"),
     },
 
     {
-      title:
-        "BUNK ROOM",
+      title: "BUNK ROOM",
 
-      subtitle:
-        "Perfect For Kids",
+      subtitle: "Perfect For Kids",
 
       description:
         "The stylish bunk room is designed especially for children and families, featuring comfortable bunk beds and a relaxing environment for unforgettable beach vacations.",
 
-      image:
-        getSectionImage(
-          "bunk-room"
-        ),
+      image: getSectionImage("bunk-room"),
     },
 
     {
-      title:
-        "GOURMET KITCHEN",
+      title: "GOURMET KITCHEN",
 
-      subtitle:
-        "Fully Equipped Luxury Kitchen",
+      subtitle: "Fully Equipped Luxury Kitchen",
 
       description:
         "Cook and gather with ease in our fully stocked gourmet kitchen featuring modern appliances, cookware, spacious countertops, dining essentials, refrigerator, oven, and everything needed for family meals.",
 
-      image:
-        getSectionImage(
-          "kitchen"
-        ),
+      image: getSectionImage("kitchen"),
     },
 
     {
-      title:
-        "PRIVATE BALCONY",
+      title: "PRIVATE BALCONY",
 
-      subtitle:
-        "Magical Gulf Views",
+      subtitle: "Magical Gulf Views",
 
       description:
         "Enjoy breathtaking sunrise and sunset views from your private balcony overlooking the Gulf of Mexico. The perfect space for relaxing mornings and evening conversations.",
 
-      image:
-        getSectionImage(
-          "balcony"
-        ),
+      image: getSectionImage("balcony"),
     },
 
     // {
@@ -236,63 +159,44 @@ export default function About() {
     // },
 
     {
-      title:
-        "BEACH ACCESS",
+      title: "BEACH ACCESS",
 
-      subtitle:
-        "White Sandy Beaches",
+      subtitle: "White Sandy Beaches",
 
       description:
         "Spend your days enjoying crystal-clear water and the world-famous white sandy beaches just steps away from the condo.",
 
-      image:
-        getSectionImage(
-          "beach-access"
-        ),
+      image: getSectionImage("beach-access"),
     },
 
     {
-      title:
-        "FAMILY FRIENDLY",
+      title: "FAMILY FRIENDLY",
 
-      subtitle:
-        "Perfect Vacation Stay",
+      subtitle: "Perfect Vacation Stay",
 
       description:
         "Designed for families and groups, our penthouse offers spacious living areas, kid-friendly accommodations, relaxing resort amenities, and everything needed for a comfortable stay.",
 
-      image:
-        getSectionImage(
-          "family-friendly"
-        ),
+      image: getSectionImage("family-friendly"),
     },
 
     {
-      title:
-        "UNFORGETTABLE EXPERIENCE",
+      title: "UNFORGETTABLE EXPERIENCE",
 
-      subtitle:
-        "Your Dream Beach Getaway",
+      subtitle: "Your Dream Beach Getaway",
 
       description:
         "Whether you're planning a romantic escape, family vacation, or relaxing coastal retreat, Reel Paradise delivers luxury, comfort, breathtaking views, and unforgettable beach experiences.",
 
-      image:
-        getSectionImage(
-          "experience"
-        ),
+      image: getSectionImage("experience"),
     },
   ];
 
   return (
-
-    <section className="bg-[#f5f5f3] py-20 overflow-hidden">
-
-      <div className="max-w-7xl mx-auto px-5 md:px-10">
-
+    <section className="bg-[#f5f5f3] py-20 overflow-hidden ">
+      <div className="max-w-7xl mx-auto px-5 md:px-10 mt-16 md:mt-10">
         {/* HEADING */}
         <div className="text-center mb-28">
-
           <h1
             className="
             font-playfair
@@ -308,7 +212,7 @@ export default function About() {
           >
             About
             <br />
-           Stunning Sunset Views
+            Stunning Sunset Views
           </h1>
 
           <p
@@ -326,53 +230,34 @@ export default function About() {
             breathtaking ocean views, resort-style amenities, and unforgettable
             family vacations at Reel Paradise.
           </p>
-
         </div>
 
         {/* SECTIONS */}
         <div className="space-y-32">
-
-          {sections.map(
-            (
-              item,
-              index
-            ) => (
-
-              <div
-                key={index}
-                className={`
+          {sections.map((item, index) => (
+            <div
+              key={index}
+              className={`
                   grid
                   grid-cols-1
                   lg:grid-cols-2
                   gap-16
                   lg:gap-24
                   items-center
-                  ${
-                    index % 2 !== 0
-                      ? "lg:[&>*:first-child]:order-2"
-                      : ""
-                  }
+                  ${index % 2 !== 0 ? "lg:[&>*:first-child]:order-2" : ""}
                 `}
-              >
-
-                {/* IMAGE */}
-                <div
-                  className="
+            >
+              {/* IMAGE */}
+              <div
+                className="
                   overflow-hidden
                   group
                 "
-                >
-
-                  <img
-                    src={
-                      item.image
-                    }
-
-                    alt={
-                      item.title
-                    }
-
-                    className="
+              >
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="
                       w-full
                       h-[300px]
                       sm:h-[420px]
@@ -382,22 +267,20 @@ export default function About() {
                       duration-700
                       group-hover:scale-105
                     "
-                  />
+                />
+              </div>
 
-                </div>
-
-                {/* CONTENT */}
-                <div
-                  className="
+              {/* CONTENT */}
+              <div
+                className="
                   text-center
                   px-2
                   md:px-10
                 "
-                >
-
-                  {/* TITLE */}
-                  <h3
-                    className="
+              >
+                {/* TITLE */}
+                <h3
+                  className="
                     uppercase
                     tracking-[10px]
                     text-black
@@ -406,13 +289,13 @@ export default function About() {
                     mb-8
                     font-light
                   "
-                  >
-                    {item.title}
-                  </h3>
+                >
+                  {item.title}
+                </h3>
 
-                  {/* SUBTITLE */}
-                  <h4
-                    className="
+                {/* SUBTITLE */}
+                <h4
+                  className="
                     uppercase
                     tracking-[6px]
                     text-gray-400
@@ -420,34 +303,27 @@ export default function About() {
                     md:text-sm
                     mb-8
                   "
-                  >
-                    {item.subtitle}
-                  </h4>
+                >
+                  {item.subtitle}
+                </h4>
 
-                  {/* DESCRIPTION */}
-                  <p
-                    className="
+                {/* DESCRIPTION */}
+                <p
+                  className="
                     text-gray-600
                     text-lg
                     md:text-[22px]
                     leading-[2]
                     font-light
                   "
-                  >
-                    {item.description}
-                  </p>
-
-                </div>
-
+                >
+                  {item.description}
+                </p>
               </div>
-
-            )
-          )}
-
+            </div>
+          ))}
         </div>
-
       </div>
-
     </section>
   );
 }

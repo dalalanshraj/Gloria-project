@@ -45,7 +45,7 @@ export default function Gallery() {
         md:px-10
       "
       >
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto text-center mt-16 md:mt-10">
           {/* SMALL TEXT */}
           <p
             className="
