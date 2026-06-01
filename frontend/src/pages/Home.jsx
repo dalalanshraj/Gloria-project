@@ -79,10 +79,10 @@ export default function Hero({listingId}) {
       <div className="absolute inset-0 bg-black/45"></div>
 
       {/* Content */}
-    <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6">
+    <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6 ">
         
   {/* Small Subtitle */}
-  <p className="uppercase tracking-[6px] text-white/80 text-sm md:text-base mb-6">
+  <p className="uppercase tracking-[6px] text-white/80 text-sm md:text-base mt-5">
     Luxury Penthouse Condo
   </p>
 
