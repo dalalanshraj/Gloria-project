@@ -96,6 +96,12 @@ app.use(
   express.static("gallery-uploads")
 );
 
+app.use(
+  "/uploads",
+  express.static("uploads")
+);
+
+
 app.use("/api", icalcalendarRoutes);
 
 
