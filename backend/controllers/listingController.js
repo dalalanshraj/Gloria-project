@@ -398,57 +398,79 @@ export const updateActivities = async (req, res) => {
     res.status(500).json({ error: "Failed to update activities" });
   }
 };
-export const updatePhotos = async (req, res) => {
-  try {
-    const listing = await Listing.findById(req.params.id);
+export const updatePhotos =
+  async (req, res) => {
+    try {
 
-    if (!listing) {
-      return res.status(404).json({
-        message: "Listing not found",
+      const listing =
+        await Listing.findById(
+          req.params.id
+        );
+
+      if (!listing) {
+        return res.status(404).json({
+          message:
+            "Listing not found",
+        });
+      }
+
+      const uploadedPhotos = [];
+
+      for (const file of req.files) {
+
+        const filename =
+          Date.now() +
+          "-" +
+          Math.round(
+            Math.random() * 1e9
+          ) +
+          ".webp";
+
+        const outputPath =
+          `uploads/${filename}`;
+
+        await sharp(file.path)
+          .resize({
+            width: 1600,
+            withoutEnlargement: true,
+          })
+          .webp({
+            quality: 75,
+          })
+          .toFile(outputPath);
+
+        // ✅ DELETE TEMP FILE
+        fs.unlinkSync(file.path);
+
+        uploadedPhotos.push({
+          url:
+            `/uploads/${filename}`,
+
+          order:
+            listing.photos.length,
+        });
+      }
+
+      listing.photos.push(
+        ...uploadedPhotos
+      );
+
+      await listing.save();
+
+      res.json({
+        success: true,
+        photos: listing.photos,
+      });
+
+    } catch (err) {
+
+      console.log(err);
+
+      res.status(500).json({
+        message: err.message,
       });
     }
-
-    const uploadedPhotos = [];
-
-    for (const file of req.files) {
-      const filename =
-        Date.now() +
-        "-" +
-        Math.round(Math.random() * 1e9) +
-        ".webp";
-
-      const outputPath = `gallery-uploads/${filename}`;
-
-      await sharp(file.buffer)
-        .resize({
-          width: 1600,
-          withoutEnlargement: true,
-        })
-        .webp({ quality: 75 })
-        .toFile(outputPath);
-
-      uploadedPhotos.push({
-        url: `/gallery-uploads/${filename}`,
-        order: listing.photos.length,
-      });
-    }
-
-    listing.photos.push(...uploadedPhotos);
-
-    await listing.save();
-
-    res.json({
-      success: true,
-      photos: listing.photos,
-    });
-  } catch (err) {
-    console.log(err);
-
-    res.status(500).json({
-      message: err.message,
-    });
-  }
-};
+  };
 
 export const deletePhoto = async (req, res) => {
   try {

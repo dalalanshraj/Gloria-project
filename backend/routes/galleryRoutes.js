@@ -13,11 +13,35 @@ import sharp from "sharp";
 const router = express.Router();
 
 // STORAGE
+const storage = multer.diskStorage({
+  destination: function (
+    req,
+    file,
+    cb
+  ) {
+    cb(null, "temp/");
+  },
+
+  filename: function (
+    req,
+    file,
+    cb
+  ) {
+    cb(
+      null,
+      Date.now() +
+        "-" +
+        file.originalname
+    );
+  },
+});
+
 const upload = multer({
-  storage: multer.memoryStorage(),
+  storage,
 
   limits: {
-    fileSize: 10 * 1024 * 1024,
+    fileSize:
+      50 * 1024 * 1024
   },
 });
 
@@ -26,7 +50,7 @@ const upload = multer({
 // ROUTES
 router.post(
   "/",
-  upload.array("images", 30),
+  upload.array("images", 50),
   uploadImage
 );
 router.get("/", getAllImages);
