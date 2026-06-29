@@ -215,30 +215,42 @@ export default function Contact({ listingId }) {
 
       await api.post("/inquiries", dbPayload);
 
-      const emailPayload = {
-        name: form.name,
+    const recipients = [
+  listing?.property?.email,
+  listing?.property?.altEmail,
+].filter(Boolean);
 
-        email: form.email,
+const emailPayload = {
+  to_email: recipients.join(","),
 
-        phone: form.phone,
+  Recipients: recipients.join(", "),
 
-        checkIn: form.checkIn?.toDateString(),
+  property: listing?.property?.title,
 
-        checkOut: form.checkOut?.toDateString(),
+  name: form.name,
+  email: form.email,
+  phone: form.phone,
 
-        adults: form.adults,
+  Arrival: formatLocalDate(form.checkIn),
+  Departure: formatLocalDate(form.checkOut),
 
-        kids: form.kids,
+  adults: form.adults,
+  kids: form.kids,
 
-        message: form.message,
-      };
+  message: form.message,
+};
 
-      await emailjs.send(
-        "service_t1dtkqc",
-        "template_1hmh0cs",
-        emailPayload,
-          "jViExLAlcltfrIIX0"
-      );
+for (const recipient of recipients) {
+  await emailjs.send(
+    "service_t1dtkqc",
+    "template_1hmh0cs",
+    {
+      ...emailPayload,
+      to_email: recipient,
+    },
+    "jViExLAlcltfrIIX0"
+  );
+}
 
       setStatus({
         type: "success",
@@ -633,7 +645,7 @@ export default function Contact({ listingId }) {
   overflow: hidden;
   background: linear-gradient(
     135deg,
-    #d1fae5 50%,
+    #5C5CFF 50%,
     #5C5CFF 50%
   ) !important;
 }

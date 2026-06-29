@@ -83,27 +83,28 @@ export default function Hero({listingId}) {
         
   {/* Small Subtitle */}
   <p className="uppercase tracking-[6px] text-white/80 text-[10px]  md:text-base mt-5  md:mt-0">
-    Luxury Penthouse Condo
+    Luxury Beachfront Retreat
   </p>
 
   {/* Main Heading */}
  <h1 className="font-playfair text-white font-bold leading-[1.05] max-w-6xl text-5xl sm:text-6xl md:text-7xl lg:text-[95px]">
-  Stunning Gulf View
+ San Remo 407
   <br />
   <span className="italic font-medium">
-    Penthouse Condo
+    3 Bedroom Condo
   </span>
 </h1>
 
   {/* Description */}
   <p className="mt-8 text-white/90 text-lg md:text-2xl max-w-3xl leading-relaxed">
-    Experience luxury beachfront living with breathtaking ocean
-    views, premium interiors, and unforgettable resort amenities.
+    Relax in a beautifully furnished top-floor condo featuring breathtaking Gulf views,
+  a spacious private balcony, resort-style pool, hot tub, and direct beach access—
+  perfectly designed for unforgettable family vacations.
   </p>
 
   {/* Button */}
   <div className="flex gap-4">
-     <Link to={listingId="6a0fa92e7591f49c6ad3eef0"} >
+     <Link to={listingId="6a3e9653df70881c017f104c"} >
   <button
   className="
     px-12
@@ -204,9 +205,9 @@ export default function Hero({listingId}) {
         </div>
       </section> */}
 
-      <AmenitiesSection  listingId="6a0fa92e7591f49c6ad3eef0" />
+      <AmenitiesSection  listingId="6a3e9653df70881c017f104c" />
       <GallerySection />
-      <ReviewsSection  listingId="6a0fa92e7591f49c6ad3eef0"/>
+      <ReviewsSection  listingId="6a3e9653df70881c017f104c"/>
     </>
   );
 }

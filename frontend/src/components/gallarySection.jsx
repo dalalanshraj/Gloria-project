@@ -97,52 +97,54 @@ export default function GallerySection() {
       <div className="max-w-7xl mx-auto px-5 md:px-10">
         {/* ================= HEADING ================= */}
 
-        <div className="text-center mb-16">
-          <p
-            className="
-            uppercase
-            tracking-[6px]
-            text-gray-400
-            text-xs
-            md:text-sm
-            mb-6
-          "
-          >
-            Luxury Gallery
-          </p>
+      <div className="text-center mb-16">
+  <p
+    className="
+      uppercase
+      tracking-[6px]
+      text-gray-400
+      text-xs
+      md:text-sm
+      mb-6
+    "
+  >
+    Experience Coastal Luxury
+  </p>
 
-          <h2
-            className="
-            font-playfair
-            text-black
-            font-bold
-            leading-[0.95]
-            text-5xl
-            sm:text-6xl
-            md:text-7xl
-            lg:text-[85px]
-          "
-          >
-            Property
-            
-            Gallery
-          </h2>
+  <h2
+    className="
+      font-playfair
+      text-black
+      font-bold
+      leading-[0.95]
+      text-5xl
+      sm:text-6xl
+      md:text-7xl
+      lg:text-[85px]
+    "
+  >
+    Discover
+    <br />
+    Every Detail
+  </h2>
 
-          <p
-            className="
-            mt-8
-            text-gray-600
-            max-w-3xl
-            mx-auto
-            text-lg
-            md:text-xl
-            leading-[2]
-          "
-          >
-            Discover breathtaking interiors, beachfront luxury, elegant living
-            spaces, and unforgettable coastal experiences.
-          </p>
-        </div>
+  <p
+    className="
+      mt-8
+      text-gray-600
+      max-w-4xl
+      mx-auto
+      text-lg
+      md:text-xl
+      leading-[2]
+    "
+  >
+    From breathtaking Gulf views and a spacious private balcony to elegant
+    interiors, resort amenities, and direct beach access, explore every space
+    that makes this San Remo condo the perfect destination for your next beach
+    getaway.
+  </p>
+</div>
 
         {/* ================= SLIDER ================= */}
 

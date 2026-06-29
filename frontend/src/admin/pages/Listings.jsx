@@ -99,7 +99,7 @@ export default function Listings() {
     onDelete={deleteListing}
   />
 ))}
-{/* <ListingCard /> */}
+<ListingCard />
       </div>
     </div>
   );

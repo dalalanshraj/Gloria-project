@@ -148,40 +148,22 @@ export default function GalleryAdmin() {
           <select
             value={sectionType}
             onChange={(e) => setSectionType(e.target.value)}
-            className="
-    border
-    border-gray-300
-    px-4
-    py-2
-    rounded-xl
-    outline-none
-  "
+            className="border border-gray-300 px-4 py-2 rounded-xl outline-none"
           >
             <option value="">Select Section (Optional)</option>
-
-            <option value="penthouse">Penthouse</option>
-
-            <option value="prime-location">Prime Location</option>
-
-            <option value="living-room">Living Room</option>
-
-            <option value="master-bedroom">Master Bedroom</option>
-
-            <option value="guest-bedroom">Guest Bedroom</option>
-
-            <option value="bunk-room">Bunk Room</option>
-
-            <option value="kitchen">Gourmet Kitchen</option>
-
-            <option value="balcony">Private Balcony</option>
-
-            <option value="amenities">Resort Amenities</option>
-
-            <option value="beach-access">Beach Access</option>
-
-            <option value="family-friendly">Family Friendly</option>
-
-            <option value="experience">Unforgettable Experience</option>
+            <option value="hero">The Condo</option>
+<option value="gulf-views">Prime Location</option>
+<option value="living-room">Living Room</option>
+<option value="master-bedroom">Master Bedroom</option>
+<option value="second-bedroom">Second Bedroom</option>
+<option value="third-bedroom">Third Bedroom</option>
+<option value="kitchen">Fully Equipped Kitchen</option>
+<option value="balcony">Private Balcony</option>
+<option value="pool-hot-tub">Pool & Hot Tub</option>
+<option value="community-amenities">Community Amenities</option>
+<option value="beach-access">Beach Access</option>
+<option value="family-friendly">Family Friendly</option>
+<option value="local-attractions">Local Attractions</option>
           </select>
 
           {/* UPLOAD */}
@@ -209,29 +191,25 @@ export default function GalleryAdmin() {
 
       {/* DRAG DROP */}
       <DragDropContext onDragEnd={handleDragEnd}>
-      <Droppable droppableId="gallery" direction="horizontal">
-  {(provided) => (
-    <div
-      {...provided.droppableProps}
-      ref={provided.innerRef}
-      className="
+        <Droppable droppableId="gallery" direction="horizontal">
+          {(provided) => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className="
         flex
         flex-wrap
         gap-6
       "
-    >
-      {images.map((img, index) => (
-        <Draggable
-          key={img._id}
-          draggableId={img._id}
-          index={index}
-        >
-          {(provided, snapshot) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.draggableProps}
-              {...provided.dragHandleProps}
-              className={`
+            >
+              {images.map((img, index) => (
+                <Draggable key={img._id} draggableId={img._id} index={index}>
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      className={`
                 w-full
                 sm:w-[48%]
                 lg:w-[23%]
@@ -242,31 +220,26 @@ export default function GalleryAdmin() {
                 hover:shadow-xl
                 transition-all
                 duration-300
-                ${
-                  snapshot.isDragging
-                    ? "rotate-2 scale-105 shadow-2xl"
-                    : ""
-                }
+                ${snapshot.isDragging ? "rotate-2 scale-105 shadow-2xl" : ""}
               `}
-            >
-              {/* IMAGE */}
-              <div className="relative group">
-                <img
-                  src={getImageUrl(img.image)}
-                  className="
+                    >
+                      {/* IMAGE */}
+                      <div className="relative group">
+                        <img
+                          src={getImageUrl(img.image)}
+                          className="
                     w-full
                     h-56
                     object-cover
                   "
-                  onError={(e) => {
-                    e.target.src =
-                      "/placeholder.png";
-                  }}
-                />
+                          onError={(e) => {
+                            e.target.src = "/placeholder.png";
+                          }}
+                        />
 
-                {/* OVERLAY */}
-                <div
-                  className="
+                        {/* OVERLAY */}
+                        <div
+                          className="
                     absolute
                     inset-0
                     bg-black/20
@@ -274,11 +247,11 @@ export default function GalleryAdmin() {
                     group-hover:opacity-100
                     transition
                   "
-                />
+                        />
 
-                {/* DRAG */}
-                <div
-                  className="
+                        {/* DRAG */}
+                        <div
+                          className="
                     absolute
                     top-3
                     right-3
@@ -289,35 +262,30 @@ export default function GalleryAdmin() {
                     text-xs
                     font-medium
                   "
-                >
-                  Drag
-                </div>
-              </div>
+                        >
+                          Drag
+                        </div>
+                      </div>
 
-              {/* CONTENT */}
-              <div className="p-4">
-
-                <p
-                  className="
+                      {/* CONTENT */}
+                      <div className="p-4">
+                        <p
+                          className="
                     text-sm
                     font-semibold
                     capitalize
                     mb-3
                   "
-                >
-                  {img.sectionType ||
-                    "general"}
-                </p>
+                        >
+                          {img.sectionType || "general"}
+                        </p>
 
-                {/* ACTIONS */}
-                <div className="flex items-center justify-between">
-
-                  {/* TOGGLE */}
-                  <div
-                    onClick={() =>
-                      toggle(img._id)
-                    }
-                    className={`
+                        {/* ACTIONS */}
+                        <div className="flex items-center justify-between">
+                          {/* TOGGLE */}
+                          <div
+                            onClick={() => toggle(img._id)}
+                            className={`
                       w-12
                       h-6
                       flex
@@ -327,15 +295,14 @@ export default function GalleryAdmin() {
                       cursor-pointer
                       transition
                       ${
-                        img.status ===
-                        "published"
+                        img.status === "published"
                           ? "bg-green-500"
                           : "bg-gray-400"
                       }
                     `}
-                  >
-                    <div
-                      className={`
+                          >
+                            <div
+                              className={`
                         bg-white
                         w-4
                         h-4
@@ -343,46 +310,38 @@ export default function GalleryAdmin() {
                         shadow-md
                         transform
                         transition
-                        ${
-                          img.status ===
-                          "published"
-                            ? "translate-x-6"
-                            : ""
-                        }
+                        ${img.status === "published" ? "translate-x-6" : ""}
                       `}
-                    />
-                  </div>
+                            />
+                          </div>
 
-                  {/* STATUS */}
-                  <span className="text-xs text-gray-500">
-                    {img.status}
-                  </span>
+                          {/* STATUS */}
+                          <span className="text-xs text-gray-500">
+                            {img.status}
+                          </span>
 
-                  {/* DELETE */}
-                  <button
-                    onClick={() =>
-                      remove(img._id)
-                    }
-                    className="
+                          {/* DELETE */}
+                          <button
+                            onClick={() => remove(img._id)}
+                            className="
                       text-red-500
                       text-sm
                       hover:underline
                     "
-                  >
-                    Delete
-                  </button>
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </Draggable>
+              ))}
 
-                </div>
-              </div>
+              {provided.placeholder}
             </div>
           )}
-        </Draggable>
-      ))}
-
-      {provided.placeholder}
-    </div>
-  )}
-</Droppable>
+        </Droppable>
       </DragDropContext>
     </div>
   );

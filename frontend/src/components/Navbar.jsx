@@ -14,7 +14,7 @@ import api from "../api/axios";
 
 // ================= LOGOS =================
 import WhiteLogo from "../assets/logo/LOGO.png";
-import BlackLogo from "../assets/logo/LOGO2.png";
+import BlackLogo from "../assets/logo/LOGO3.png";
 
 export default function Navbar({ listingId }) {
 

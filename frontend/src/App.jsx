@@ -44,7 +44,7 @@ function App() {
     <>
     <ScrollToTop />
       {/* FRONTEND ONLY */}
-      {!isAdminRoute && <Navbar listingId="6a0fa92e7591f49c6ad3eef0"/>}
+      {!isAdminRoute && <Navbar listingId="6a3e9653df70881c017f104c"/>}
 
       <Routes>
         {/* FRONTEND ROUTES */}
@@ -52,7 +52,7 @@ function App() {
           <Route path="/:id" element={<PropertyDetail />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/about" element={<About />} />
-          <Route path="/contact-us" element={<Contact listingId="6a0fa92e7591f49c6ad3eef0"/>} />  
+          <Route path="/contact-us" element={<Contact listingId="6a3e9653df70881c017f104c"/>} />  
           <Route path="/booking-policy" element={<BookingPolicy />}/>  
         {/* <Route path="/properties" element={<Properties />} />
         <Route path="/results" element={<Results />} />
@@ -150,7 +150,7 @@ function App() {
 
 
       {/* FRONTEND ONLY */}
-      {!isAdminRoute && <Footer listingId="6a0fa92e7591f49c6ad3eef0" />}
+      {!isAdminRoute && <Footer listingId="6a3e9653df70881c017f104c" />}
     </>
   );
 }

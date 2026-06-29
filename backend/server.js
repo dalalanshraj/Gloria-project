@@ -28,15 +28,13 @@ import calendarRoutes from "./routes/listingCalendarRoutes.js";
 import dealRoutes from    "./routes/dealRoutes.js"
 import galleryRoutes from "./routes/galleryRoutes.js";
 import icalcalendarRoutes from "./routes/icalRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
 
 const app = express();
-const PORT = process.env.PORT || 4005;
+const PORT = process.env.PORT || 4009;
 const allowedOrigins = [
-   "http://localhost:5174",
   "http://localhost:5173",
-  "http://localhost:5175",
-  "https://floridapanhandlebeachescape.com",
-  "https://floridapanhandlebeachescape.com",
+
  
 ];
 
@@ -103,6 +101,7 @@ app.use(
 
 
 app.use("/api", icalcalendarRoutes);
+app.use("/api/profile", profileRoutes);
 
 
 

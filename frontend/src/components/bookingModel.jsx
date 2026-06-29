@@ -10,6 +10,7 @@ export default function BookingModalContact({
   onClose,
 }) {
   const [calendarDates, setCalendarDates] = useState([]);
+  const [listing, setListing] = useState(null);
 
   const [selecting, setSelecting] =
     useState("checkIn");
@@ -32,12 +33,12 @@ export default function BookingModalContact({
   // FETCH CALENDAR
   // =====================================
 
-  useEffect(() => {
-    if (listingId) {
-      fetchDates();
-    }
-  }, [listingId]);
-
+ useEffect(() => {
+  if (listingId) {
+    fetchDates();
+    fetchListing();
+  }
+}, [listingId]);
   const fetchDates = async () => {
     try {
       const res = await api.get(
@@ -51,6 +52,15 @@ export default function BookingModalContact({
       console.log(err);
     }
   };
+  const fetchListing = async () => {
+  try {
+    const res = await api.get(`/listings/${listingId}`);
+
+    setListing(res.data);
+  } catch (err) {
+    console.log(err);
+  }
+};
 
   // =====================================
   // DATE FORMAT
@@ -261,30 +271,37 @@ export default function BookingModalContact({
         Kids: form.kids,
       });
 
-      await emailjs.send(
-        "service_t1dtkqc",
-        "template_1hmh0cs",
-        {
-          name: form.name,
-          email: form.email,
-          phone: form.phone,
+     const recipients = [
+  listing?.property?.email,
+  listing?.property?.altEmail,
+].filter(Boolean);
 
-          checkIn:
-            formatLocalDate(
-              form.checkIn
-            ),
+console.log("Recipients:", recipients);
 
-          checkOut:
-            formatLocalDate(
-              form.checkOut
-            ),
+for (const recipient of recipients) {
 
-          adults: form.adults,
-          kids: form.kids,
-          message: form.message,
-        },
-        "jViExLAlcltfrIIX0"
-      );
+  await emailjs.send(
+    "service_24r0j2n",
+    "template_of44swa",
+    {
+      to_email: recipient,
+
+      property: listing?.property?.title,
+
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+
+      Arrival: formatLocalDate(form.checkIn),
+      Departure: formatLocalDate(form.checkOut),
+
+      adults: form.adults,
+      kids: form.kids,
+      message: form.message,
+    },
+    "rT74gL23XsIP2be41"
+  );
+}
 
       alert(
         "Booking request sent"

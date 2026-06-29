@@ -46,7 +46,7 @@ export default function Footer({ listingId }) {
 
       <div className="w-full h-[240px] overflow-hidden">
         <iframe
-          src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d873.5075493519123!2d-85.80502213039706!3d30.17657209842859!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8893891dea520c1f%3A0x6d3694878ccb8cb!2sWash%20Wizards!5e1!3m2!1sen!2sin!4v1779500259298!5m2!1sen!2sin`}
+          src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3488.005436644214!2d-86.22698012438342!3d30.346048174773113!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8893e2503b66d4e5%3A0xee3109dac02d5b72!2s4045%20W%20County%20Hwy%2030A%2C%20Santa%20Rosa%20Beach%2C%20FL%2032459%2C%20USA!5e1!3m2!1sen!2sin!4v1782505488684!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin`}
           className="w-full h-100 border-0"
           allowFullScreen=""
           loading="lazy"

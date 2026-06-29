@@ -88,9 +88,10 @@ export default function Gallery() {
             leading-[2]
           "
           >
-            Explore our luxury penthouse, breathtaking gulf views, elegant
-            interiors, resort amenities, and unforgettable beachfront
-            experiences.
+            From breathtaking Gulf views and a spacious private balcony to elegant
+    interiors, resort amenities, and direct beach access, explore every space
+    that makes this San Remo condo the perfect destination for your next beach
+    getaway.
           </p>
         </div>
       </section>

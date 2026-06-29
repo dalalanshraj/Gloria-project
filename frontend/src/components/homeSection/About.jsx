@@ -1,44 +1,45 @@
 import condoImg from "../../assets/about-Img1.png";
-import bedroomImg from "../../assets/about-img2.png";
-import kitchenImg from "../../assets/about-img3.png";
+import bedroomImg from "../../assets/about-img2.jpeg";
+import kitchenImg from "../../assets/about-img3.jpg";
 import beachImg from "../../assets/about-img4.jpeg";
 
 import { Link } from "react-router-dom";
 
 export default function AboutSection() {
-  const sections = [
-    {
-      title: "THE PENTHOUSE CONDO",
-      subtitle: "Luxury Gulf View Penthouse",
-      description:
-        "Experience luxury beachfront living in our stunning penthouse condo located at Laketown Wharf Resort. Enjoy breathtaking gulf views, modern interiors, resort-style amenities, and spacious accommodations designed for unforgettable vacations with family and friends.",
-      image: condoImg,
-    },
+ const sections = [
+  {
+    title: "THE CONDO",
+    subtitle: "Luxury Gulf View Retreat",
+    description:
+      "Escape to this beautifully furnished top-floor condo featuring breathtaking Gulf views, a spacious private balcony, direct beach access, and resort-style amenities. Perfect for families seeking a relaxing getaway on Santa Rosa Beach.",
+    image: condoImg,
+  },
 
-    {
-      title: "PRIMARY BEDROOM",
-      subtitle: "Luxury Gulf-Front Bedroom",
-      description:
-        "Relax in our beautifully designed primary suite featuring a king-size bed, elegant interiors, private bathroom, and direct balcony access with breathtaking gulf views.",
-      image: bedroomImg,
-    },
+  {
+    title: "PRIMARY BEDROOM",
+    subtitle: "Comfortable King Suite",
+    description:
+      "The spacious primary suite features a luxurious king-size bed, Smart TV, private en-suite bathroom with a walk-in shower, USB charging ports, and a peaceful atmosphere for the perfect night's sleep.",
+    image: bedroomImg,
+  },
 
-    {
-      title: "GOURMET KITCHEN",
-      subtitle: "Modern Luxury Kitchen",
-      description:
-        "Our fully equipped gourmet kitchen includes premium appliances, spacious countertops, cookware, coffee station, dining essentials, and everything needed for memorable family meals.",
-      image: kitchenImg,
-    },
+  {
+    title: "FULLY EQUIPPED KITCHEN",
+    subtitle: "Everything You Need",
+    description:
+      "Prepare delicious meals in the modern kitchen featuring granite countertops, stainless steel appliances, a Keurig coffee maker, blender, cookware, dining essentials, and plenty of space for family gatherings.",
+    image: kitchenImg,
+  },
 
-    {
-      title: "FAMILY FRIENDLY",
-      subtitle: "Perfect Stay For Families",
-      description:
-        "Designed for families and groups, the condo includes beach toys, high chair, pack n play, bunk room, spacious living areas, and kid-friendly amenities for a comfortable beach vacation.",
-      image: beachImg,
-    },
-  ];
+  {
+    title: "FAMILY GETAWAY",
+    subtitle: "Perfect for Every Vacation",
+     description:
+    "Just a short drive from the condo, Camp Helen State Park offers breathtaking coastal scenery, nature trails, kayaking, wildlife viewing, and peaceful beaches. It's the perfect escape for guests looking to experience the natural beauty of Florida's Emerald Coast.",
+  image: beachImg,
+        image: beachImg,
+  },
+];
 
   return (
     <section className="bg-[#f8f8f8] py-20 overflow-hidden">
@@ -47,14 +48,11 @@ export default function AboutSection() {
         {/* MAIN HEADING */}
         <div className="text-center mb-24">
         <h1 className="font-playfair text-5xl md:text-7xl font-bold">
-  Luxury Penthouse Condo
+   Luxury Gulf View Condo
 </h1>
 
           <p className="mt-8 text-gray-600 max-w-4xl mx-auto text-lg md:text-xl leading-9">
-            Discover our luxury beachfront penthouse condo featuring stunning
-            gulf views, premium interiors, resort-style amenities, and spacious
-            accommodations perfect for unforgettable vacations with family and
-            friends.
+             Escape to our beautifully furnished top-floor condo at San Remo on Santa Rosa Beach. Enjoy breathtaking Gulf views, direct beach access, resort-style amenities, and spacious accommodations designed for relaxing family vacations and unforgettable coastal getaways.
           </p>
         </div>
 

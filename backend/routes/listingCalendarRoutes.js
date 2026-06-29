@@ -35,5 +35,6 @@ router.put("/:id/calendar/clean-duplicates", cleanDuplicateCalendar);
 router.put("/:id/calendar/clear", clearCalendar);
 router.post("/:id/calendar/import-ical", isAuth, isAdmin, importICal);
 router.put("/:id/calendar/reset-ical", resetICal);
+// router.put("/:id/calendar/clear", clearCalendar);
 
 export default router;
