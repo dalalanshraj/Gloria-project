@@ -35,7 +35,7 @@ const PORT = process.env.PORT || 4009;
 const allowedOrigins = [
    "https://rentemeraldcoastcondos.com",
   "https://www.rentemeraldcoastcondos.com",
-  "http://localhost:5173",
+  "http://localhost:5174",
 
  
 ];
