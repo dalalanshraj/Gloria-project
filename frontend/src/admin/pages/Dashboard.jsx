@@ -24,8 +24,7 @@
     useEffect(() => {
     api.get("/bookings/admin/dashboard")
       .then((res) => {
-        console.log("FULL RESPONSE 👉", res);
-        console.log("DATA 👉", res.data);
+        
         setStats(res.data);
         
       })

@@ -157,18 +157,18 @@ export default function PhotosTab({
 
   const deletePhoto = async (photo) => {
   try {
-    console.log("DELETE PHOTO:", photo);
+ 
 
     const filename =
       photo.url.split("/").pop();
 
-    console.log("FILENAME:", filename);
+ 
 
     const res = await api.delete(
       `/listings/${listingId}/photos/${filename}`
     );
 
-    console.log("DELETE RES:", res.data);
+ 
 
     setPhotos(res.data.photos || []);
   } catch (err) {

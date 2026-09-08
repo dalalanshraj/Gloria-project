@@ -21,7 +21,7 @@ export default function Footer({ listingId }) {
       .get(`/listings/${listingId}`)
 
       .then((res) => {
-        console.log("FOOTER DATA:", res.data);
+     
 
         setListing(res.data);
       })

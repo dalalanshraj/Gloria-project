@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useModal } from "../context/ModalContext";
 import { useParams } from "react-router-dom";
 import api from "../api/axios.js";
 import DatePicker from "react-datepicker";
@@ -20,6 +21,7 @@ import DisplayCalendar from "../components/miniCalendar.jsx";
 import PropertyminiCalendar from "../components/PropertyminiCalendar.jsx";
 
 const PropertyDetail = () => {
+  const { showModal } = useModal();
   const { id } = useParams();
 
   const [listing, setListing] = useState(null);
@@ -30,7 +32,8 @@ const PropertyDetail = () => {
 
   const [checkIn, setCheckIn] = useState(null);
   const [checkOut, setCheckOut] = useState(null);
-
+  const [pricing, setPricing] = useState(null);
+  const [pricingLoading, setPricingLoading] = useState(false);
   const [blockedDates, setBlockedDates] = useState([]);
   const [openInquiry, setOpenInquiry] = useState(false);
   const [calendarData, setCalendarData] = useState([]);
@@ -67,43 +70,66 @@ const PropertyDetail = () => {
       setBlockedDates(blocked);
     });
   }, [id]);
-  const getMinNightsForDate = (date) => {
-    if (!listing?.rates || !date) return 1;
 
-    const selected = listing.rates.find((r) => {
-      const from = new Date(r.from);
-      const to = new Date(r.to);
+  const getDateKey = (date) => {
+    const d = new Date(date);
 
-      from.setHours(0, 0, 0, 0);
-      to.setHours(23, 59, 59, 999);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+      2,
+      "0",
+    )}-${String(d.getDate()).padStart(2, "0")}`;
+  };
 
-      return date >= from && date <= to;
+  const getRateForDate = (date) => {
+    if (!listing?.rates?.length || !date) return null;
+
+    const currentKey = getDateKey(date);
+
+    console.log("RATE CHECK:", {
+      selectedDate: currentKey,
+      rates: listing.rates.map((rate) => ({
+        season: rate.season,
+        from: getDateKey(rate.from),
+        to: getDateKey(rate.to),
+        nightly: rate.nightly,
+        minNights: rate.minNights,
+      })),
     });
 
-    return selected?.minNights || 1;
+    return listing.rates.find((rate) => {
+      const fromKey = getDateKey(rate.from);
+      const toKey = getDateKey(rate.to);
+
+      return currentKey >= fromKey && currentKey <= toKey;
+    });
+  };
+
+  const getMinNightsForDate = (date) => {
+    const rate = getRateForDate(date);
+
+    return rate ? Number(rate.minNights || 1) : null;
   };
 
   // 🔹 useEffect
-  useEffect(() => {
-    if (checkIn && checkOut && listing) {
-      const minNights = getMinNightsForDate(checkIn);
+  // useEffect(() => {
+  //   if (checkIn && checkOut && listing) {
+  //     const minNights = getMinNightsForDate(checkIn);
 
-      const diff = (checkOut - checkIn) / (1000 * 60 * 60 * 24);
+  //     const diff = (checkOut - checkIn) / (1000 * 60 * 60 * 24);
 
-      if (diff < minNights) {
-        const newDate = new Date(checkIn);
-        newDate.setDate(newDate.getDate() + minNights);
-        setCheckOut(newDate);
-      }
-    }
-  }, [checkIn, checkOut, listing]);
+  //     if (diff < minNights) {
+  //       const newDate = new Date(checkIn);
+  //       newDate.setDate(newDate.getDate() + minNights);
+  //       setCheckOut(newDate);
+  //     }
+  //   }
+  // }, [checkIn, checkOut, listing]);
 
   if (loading) return <p className="p-10">Loading...</p>;
   if (!listing) return <p className="p-10">Property not found</p>;
 
   // ================= IMAGES =================
-  const imageUrls =
-  listing.photos || [];
+  const imageUrls = listing.photos || [];
   // ================= REVIEWS =================
   const publishedReviews =
     listing.reviews?.filter((r) => r.published === true) || [];
@@ -120,12 +146,11 @@ const PropertyDetail = () => {
 
   // ================= MAP =================
   const getMapEmbedUrl = (lat, lng) => {
+    const finalLat = Number(lat);
+    const finalLng = Number(lng);
 
-  const finalLat = Number(lat);
-  const finalLng = Number(lng);
-
-  return `https://maps.google.com/maps?q=${finalLat},${finalLng}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-};
+    return `https://maps.google.com/maps?q=${finalLat},${finalLng}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  };
   const formatDate = (date) => {
     if (!date) return "";
 
@@ -136,6 +161,29 @@ const PropertyDetail = () => {
     return `${year}-${month}-${day}`;
   };
 
+  const fetchPricing = async (start, end) => {
+    if (!start || !end) {
+      setPricing(null);
+      return;
+    }
+
+    try {
+      setPricingLoading(true);
+
+      const res = await api.post("/bookings/preview", {
+        propertyId: id,
+        checkIn: formatDate(start),
+        checkOut: formatDate(end),
+      });
+
+      setPricing(res.data);
+    } catch (err) {
+      console.error("PRICING ERROR:", err.response?.data || err.message);
+      setPricing(null);
+    } finally {
+      setPricingLoading(false);
+    }
+  };
   // ================= MIN NIGHT AUTO FIX =================
   // 🔹 single function
 
@@ -243,34 +291,20 @@ const PropertyDetail = () => {
           )}
 
           {/* MAP */}
-          {listing?.location?.lat &&
- listing?.location?.lng && (
+          {listing?.location?.lat && listing?.location?.lng && (
+            <div className="mt-10">
+              <h2 className="text-2xl font-semibold mb-4">Location</h2>
 
-  <div className="mt-10">
-
-    <h2 className="text-2xl font-semibold mb-4">
-      Location
-    </h2>
-
-    <iframe
-      src={getMapEmbedUrl(
-        listing.location.lat,
-        listing.location.lng
-      )}
-
-      className="w-full h-96 rounded-xl border"
-
-      loading="lazy"
-
-      allowFullScreen
-
-      referrerPolicy="no-referrer-when-downgrade"
-
-      title="Property Location"
-    />
-
-  </div>
-)}
+              <iframe
+                src={getMapEmbedUrl(listing.location.lat, listing.location.lng)}
+                className="w-full h-96 rounded-xl border"
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Property Location"
+              />
+            </div>
+          )}
 
           {/* REVIEWS */}
           {publishedReviews.length > 0 && (
@@ -338,10 +372,28 @@ const PropertyDetail = () => {
               <DatePicker
                 selected={checkIn}
                 onChange={(date) => {
+                  if (!date) {
+                    setCheckIn(null);
+                    setCheckOut(null);
+                    setPricing(null);
+                    return;
+                  }
+
+                  const rate = getRateForDate(date);
+
+                  if (!rate) {
+                    showModal("No rate available for selected date");
+                    setCheckIn(null);
+                    setCheckOut(null);
+                    setPricing(null);
+                    return;
+                  }
+
                   setCheckIn(date);
                   setCheckOut(null);
+                  setPricing(null);
                 }}
-                excludeDates={blockedDates}
+                // excludeDates={blockedDates}
                 placeholderText="Check-in"
                 minDate={new Date()}
                 className="border p-3 rounded w-full"
@@ -349,18 +401,69 @@ const PropertyDetail = () => {
 
               <DatePicker
                 selected={checkOut}
-                onChange={(date) => setCheckOut(date)}
-                excludeDates={blockedDates}
+                onChange={(date) => {
+                  if (!date || !checkIn) return;
+
+                  const minNights = Number(getMinNightsForDate(checkIn) || 1);
+
+                  const start = new Date(checkIn);
+                  const end = new Date(date);
+
+                  start.setHours(12, 0, 0, 0);
+                  end.setHours(12, 0, 0, 0);
+
+                  const nights = Math.round(
+                    (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
+                  );
+
+                  console.log("DATE CHECK:", {
+                    checkIn: getDateKey(start),
+                    checkOut: getDateKey(end),
+                    nights,
+                    minNights,
+                  });
+
+                  // Minimum nights validation
+                  if (nights < minNights) {
+                    showModal(`Minimum ${minNights} nights stay required`);
+
+                    setCheckOut(null);
+                    setPricing(null);
+                    return;
+                  }
+
+                  // Check every night has a rate
+                  for (
+                    let d = new Date(start);
+                    d < end;
+                    d.setDate(d.getDate() + 1)
+                  ) {
+                    if (!getRateForDate(d)) {
+                      showModal(
+                        "Selected dates are not available for the complete stay",
+                      );
+
+                      setCheckOut(null);
+                      setPricing(null);
+                      return;
+                    }
+                  }
+
+                  setCheckOut(date);
+                  fetchPricing(checkIn, date);
+                }}
                 placeholderText="Check-out"
                 minDate={
                   checkIn
                     ? (() => {
                         const d = new Date(checkIn);
 
-                        // ✅ IMPORTANT FIX
                         d.setHours(12, 0, 0, 0);
 
-                        d.setDate(d.getDate() + getMinNightsForDate(checkIn));
+                        d.setDate(
+                          d.getDate() +
+                            Number(getMinNightsForDate(checkIn) || 1),
+                        );
 
                         return d;
                       })()
@@ -369,6 +472,134 @@ const PropertyDetail = () => {
                 className="border p-3 rounded w-full"
               />
             </div>
+            {pricingLoading && (
+              <div className="mt-3 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
+                    <span className="text-sm font-medium text-gray-600">
+                      Calculating price...
+                    </span>
+                  </div>
+
+                  <span className="text-xs text-gray-400">Please wait</span>
+                </div>
+              </div>
+            )}
+
+            {pricing &&
+              !pricingLoading &&
+              (() => {
+                const taxAmount =
+                  pricing.extraFees
+                    ?.filter((fee) => fee.name?.toLowerCase().includes("tax"))
+                    .reduce((sum, fee) => sum + Number(fee.amount || 0), 0) ||
+                  0;
+
+                return (
+                  <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                    {/* Header */}
+                    <div className="border-b border-gray-100 bg-gray-50 px-5 py-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-base font-semibold text-gray-900">
+                            Price Summary
+                          </h3>
+
+                          <p className="mt-0.5 text-xs text-gray-500">
+                            Your estimated stay cost
+                          </p>
+                        </div>
+
+                        <div className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
+                          {pricing.nights || 0}{" "}
+                          {pricing.nights === 1 ? "night" : "nights"}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Price Details */}
+                    <div className="space-y-4 px-5 py-5">
+                      {/* Rate */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+                            $
+                          </div>
+
+                          <div>
+                            <p className="text-sm font-medium text-gray-800">
+                              Accommodation
+                            </p>
+
+                            <p className="text-xs text-gray-500">
+                              {pricing.nights || 0}{" "}
+                              {pricing.nights === 1 ? "night" : "nights"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <span className="text-sm font-semibold text-gray-900">
+                          ${Number(pricing.subtotal || 0).toFixed(2)}
+                        </span>
+                      </div>
+
+                      {/* Tax */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+                            %
+                          </div>
+
+                          <div>
+                            <p className="text-sm font-medium text-gray-800">
+                              Tax
+                            </p>
+
+                            <p className="text-xs text-gray-500">
+                              Applicable taxes
+                            </p>
+                          </div>
+                        </div>
+
+                        <span className="text-sm font-semibold text-gray-900">
+                          ${taxAmount.toFixed(2)}
+                        </span>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="border-t border-dashed border-gray-200" />
+
+                      {/* Total */}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-base font-semibold text-gray-900">
+                            Estimated Total
+                          </p>
+
+                          <p className="mt-0.5 text-xs text-gray-500">
+                            Including tax
+                          </p>
+                        </div>
+
+                        <span className="text-xl font-bold text-gray-900">
+                          $
+                          {(Number(pricing.subtotal || 0) + taxAmount).toFixed(
+                            2,
+                          )}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Bottom Note */}
+                    <div className="border-t border-gray-100 bg-gray-50 px-5 py-3">
+                      <p className="text-center text-xs text-gray-500">
+                        Final price may vary depending on applicable fees.
+                      </p>
+                    </div>
+                  </div>
+                );
+              })()}
             {/* <button
             disabled={!checkIn || !checkOut}
             onClick={() => setOpenBooking(true)}
@@ -387,15 +618,16 @@ const PropertyDetail = () => {
               Send Inquiry
             </button>
             <PropertyminiCalendar listingId={listing._id} className="mt-20" />
-            <div className="overflow-hidden">
-            {openInquiry && (
-              <InquiryModal
-                propertyId={id}
-                onClose={() => setOpenInquiry(false)}
-              />
-              
-            )}
-            </div>
+           <div className="overflow-hidden">
+  {openInquiry && (
+    <InquiryModal
+      propertyId={id}
+      initialArrival={checkIn}
+      initialDeparture={checkOut}
+      onClose={() => setOpenInquiry(false)}
+    />
+  )}
+</div>
           </div>
         </div>
       </div>

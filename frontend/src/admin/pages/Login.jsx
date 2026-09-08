@@ -23,7 +23,7 @@ const Login = () => {
         password,
       });
 
-      console.log("LOGIN RESPONSE:", res.data);
+ 
 
       // ✅ SAVE TOKEN
       localStorage.setItem("token", res.data.token);

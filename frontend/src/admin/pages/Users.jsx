@@ -288,7 +288,7 @@ const saveProfile = async () => {
 };
 
   const changeClientPassword = async () => {
-console.log("CLIENT PASSWORD BUTTON CLICKED");
+ 
 
   if (!selectedUser) {
     return alert("Please select a client first.");

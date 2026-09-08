@@ -14,7 +14,7 @@ export default function AmenitiesSection({ listingId }) {
     api
       .get(`/listings/${listingId}`)
       .then((res) => {
-        console.log("FULL DATA:", res.data);
+        
 
         // 👇 OBJECT TO ARRAY
         const amenitiesObject =

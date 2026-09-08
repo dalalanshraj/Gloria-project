@@ -13,7 +13,7 @@ export default function ReviewsSection({ listingId }) {
     api
       .get(`/listings/${listingId}`)
       .then((res) => {
-        console.log("FULL LISTING:", res.data);
+       
 
         // 👇 YOUR REVIEWS ARRAY
         const data = res.data?.reviews || res.data?.listing?.reviews || [];

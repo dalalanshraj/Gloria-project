@@ -5,13 +5,13 @@ import "react-datepicker/dist/react-datepicker.css";
 import { IoMdClose } from "react-icons/io";
 import emailjs from "@emailjs/browser";
 
-export default function InquiryModal({ propertyId, onClose }) {
+export default function InquiryModal({ propertyId, onClose ,initialArrival, initialDeparture,}) {
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
-    Arrival: null,
-    Departure: null,
+      Arrival: initialArrival || null,
+  Departure: initialDeparture || null,
     Adults: "",
     Kids: "",
     message: "",

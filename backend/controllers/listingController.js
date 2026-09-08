@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+ import dotenv from "dotenv";
 import Listing from "../models/Listing.js";
 import Deal from "../models/Deal.js";
 import Inquiry from "../models/Inquiry.js";
