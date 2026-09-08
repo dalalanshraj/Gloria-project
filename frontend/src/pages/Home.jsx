@@ -126,11 +126,11 @@ export default function Hero({listingId}) {
     duration-500
   "
 >
-  More Info
+ Book Now
 </button>
   </Link>
  
-  <button
+  {/* <button
   onClick={() => {
     setOpen(true);
   }}
@@ -155,18 +155,18 @@ export default function Hero({listingId}) {
   "
 >
   Book Now
-</button>
+</button> */}
    </div>
 </div>
     </section>
 
       {/* MODAL */}
-      {open && featured && (
+      {/* {open && featured && (
         <BookingModalContact
           onClose={() => setOpen(false)}
           listingId={featured._id}
         />
-      )}
+      )} */}
       {/* OTHER SECTIONS */}
       <AboutSection  />
       {/* <FeesTable /> */}
