@@ -495,9 +495,7 @@ const PropertyDetail = () => {
                 Price Summary
               </h3>
 
-              <p className="mt-0.5 text-xs text-gray-500">
-                Your estimated stay cost
-              </p>
+              
             </div>
 
             <div className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
@@ -519,7 +517,7 @@ const PropertyDetail = () => {
 
               <div>
                 <p className="text-sm font-medium text-gray-800">
-                  Accommodation
+       Rates
                 </p>
 
                 <p className="text-xs text-gray-500">
