@@ -31,6 +31,7 @@ const PropertyDetail = () => {
   const [openBooking, setOpenBooking] = useState(false);
 
   const [checkIn, setCheckIn] = useState(null);
+    const [owner, setOwner] = useState(null);
   const [checkOut, setCheckOut] = useState(null);
   const [pricing, setPricing] = useState(null);
   const [pricingLoading, setPricingLoading] = useState(false);
@@ -185,7 +186,7 @@ const PropertyDetail = () => {
 
       <div className="max-w-7xl mx-auto px-4 mt-10 grid grid-cols-1 lg:grid-cols-3 gap-10 mb-20">
         {/* LEFT */}
-        <div className="lg:col-span-2 bg-white rounded-3xl shadow-lg p-6 md:p-10">
+       <div className="order-2 lg:order-1 lg:col-span-2 bg-white rounded-3xl shadow-lg p-6 md:p-10">
           <p className="text-gray-500 text-sm mb-2">
             {listing.location?.address || "Location"}
           </p>
@@ -357,8 +358,70 @@ const PropertyDetail = () => {
         {/* RIGHT BOOKING */}
         {/* CALENDAR */}
 
-        <div className="lg:col-span-1">
-          <div className="sticky top-[0px] self-start bg-white rounded-2xl shadow p-6 space-y-5 ">
+        <div className="order-1 lg:order-2 lg:col-span-1">
+              <div
+              className="
+        relative
+        pt-20
+        pb-10
+        px-8
+        bg-gradient-to-br
+        from-[#0c8b8d]
+        via-[#1587d6]
+        to-[#2557e5]
+        text-white
+      "
+            >
+              {/* IMAGE */}
+
+              <div
+                className="
+          absolute
+          top-0
+          translate-y-[-50%]
+          left-1/2
+          -translate-x-1/2
+          w-24
+          h-24
+          rounded-full
+          overflow-hidden
+          border-[5px]
+          border-white
+          shadow-2xl
+          bg-white
+        "
+              >
+                <img
+                  src={`${import.meta.env.VITE_API_URL}${owner?.photo}`}
+                  alt={owner?.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <p
+                className="
+          text-center
+          uppercase
+          tracking-[5px]
+          text-xs
+          text-white/80
+        "
+              >
+                Property Host
+              </p>
+
+              <h2
+                className="
+          mt-2
+          text-center
+          text-3xl
+          font-bold
+        "
+              >
+                {owner?.name}
+              </h2>
+            </div>
+          <div className="lg:sticky lg:top-6 self-start bg-white rounded-2xl shadow p-6 space-y-5">
             <div className="flex gap-2">
               <DatePicker
                 selected={checkIn}
