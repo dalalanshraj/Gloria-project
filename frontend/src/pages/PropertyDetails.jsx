@@ -40,6 +40,7 @@ const PropertyDetail = () => {
   const [calendarData, setCalendarData] = useState([]);
 
   // ================= FETCH LISTING =================
+  // ================= FETCH LISTING =================
   useEffect(() => {
     api
       .get(`/listings/${id}`)
@@ -49,6 +50,12 @@ const PropertyDetail = () => {
       })
       .catch(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    api
+      .get(`/profile/public/6a3e8d24c09b9c620824122b`)
+      .then((res) => setOwner(res.data));
+  }, []);
 
   // ================= FETCH CALENDAR =================
   useEffect(() => {
