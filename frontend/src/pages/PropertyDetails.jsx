@@ -85,16 +85,7 @@ const PropertyDetail = () => {
 
     const currentKey = getDateKey(date);
 
-    console.log("RATE CHECK:", {
-      selectedDate: currentKey,
-      rates: listing.rates.map((rate) => ({
-        season: rate.season,
-        from: getDateKey(rate.from),
-        to: getDateKey(rate.to),
-        nightly: rate.nightly,
-        minNights: rate.minNights,
-      })),
-    });
+    
 
     return listing.rates.find((rate) => {
       const fromKey = getDateKey(rate.from);
