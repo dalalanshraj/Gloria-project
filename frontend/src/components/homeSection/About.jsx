@@ -1,4 +1,4 @@
-import condoImg from "../../assets/Img1.png";
+import condoImg from "../../assets/img1.png";
 import bedroomImg from "../../assets/about-img2.jpeg";
 import kitchenImg from "../../assets/about-img3.jpg";
 import beachImg from "../../assets/about-img4.jpeg";
