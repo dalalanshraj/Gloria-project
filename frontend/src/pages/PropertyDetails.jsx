@@ -31,7 +31,7 @@ const PropertyDetail = () => {
   const [openBooking, setOpenBooking] = useState(false);
 
   const [checkIn, setCheckIn] = useState(null);
-    const [owner, setOwner] = useState(null);
+  const [owner, setOwner] = useState(null);
   const [checkOut, setCheckOut] = useState(null);
   const [pricing, setPricing] = useState(null);
   const [pricingLoading, setPricingLoading] = useState(false);
@@ -92,8 +92,6 @@ const PropertyDetail = () => {
     if (!listing?.rates?.length || !date) return null;
 
     const currentKey = getDateKey(date);
-
-    
 
     return listing.rates.find((rate) => {
       const fromKey = getDateKey(rate.from);
@@ -193,7 +191,7 @@ const PropertyDetail = () => {
 
       <div className="max-w-7xl mx-auto px-4 mt-10 grid grid-cols-1 lg:grid-cols-3 gap-10 mb-20">
         {/* LEFT */}
-       <div className="order-2 lg:order-1 lg:col-span-2 bg-white rounded-3xl shadow-lg p-6 md:p-10">
+        <div className="order-2 lg:order-1 lg:col-span-2 bg-white rounded-3xl shadow-lg p-6 md:p-10">
           <p className="text-gray-500 text-sm mb-2">
             {listing.location?.address || "Location"}
           </p>
@@ -366,8 +364,8 @@ const PropertyDetail = () => {
         {/* CALENDAR */}
 
         <div className="order-1 lg:order-2 lg:col-span-1">
-              <div
-              className="
+          <div
+            className="
         relative
         pt-20
         pb-10
@@ -378,11 +376,11 @@ const PropertyDetail = () => {
         to-[#2557e5]
         text-white
       "
-            >
-              {/* IMAGE */}
+          >
+            {/* IMAGE */}
 
-              <div
-                className="
+            <div
+              className="
           absolute
           top-0
           translate-y-[-50%]
@@ -397,37 +395,37 @@ const PropertyDetail = () => {
           shadow-2xl
           bg-white
         "
-              >
-                <img
-                  src={`${import.meta.env.VITE_API_URL}${owner?.photo}`}
-                  alt={owner?.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+            >
+              <img
+                src={`${import.meta.env.VITE_API_URL}${owner?.photo}`}
+                alt={owner?.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
 
-              <p
-                className="
+            <p
+              className="
           text-center
           uppercase
           tracking-[5px]
           text-xs
           text-white/80
         "
-              >
-                Property Host
-              </p>
+            >
+              Property Host
+            </p>
 
-              <h2
-                className="
+            <h2
+              className="
           mt-2
           text-center
           text-3xl
           font-bold
         "
-              >
-                {owner?.name}
-              </h2>
-            </div>
+            >
+              {owner?.name}
+            </h2>
+          </div>
           <div className="lg:sticky lg:top-6 self-start bg-white rounded-2xl shadow p-6 space-y-5">
             <div className="flex gap-2">
               <DatePicker
@@ -533,167 +531,165 @@ const PropertyDetail = () => {
                 className="border p-3 rounded w-full"
               />
             </div>
-           {pricing &&
-  !pricingLoading &&
-  (() => {
-    const mandatoryFees =
-      pricing.extraFees?.filter(
-        (fee) => fee.option === "mandatory"
-      ) || [];
+            {pricing &&
+              !pricingLoading &&
+              (() => {
+                const mandatoryFees =
+                  pricing.extraFees?.filter(
+                    (fee) => fee.option === "mandatory",
+                  ) || [];
 
-    const taxFees = mandatoryFees.filter((fee) =>
-      fee.name?.toLowerCase().includes("tax")
-    );
+                const taxFees = mandatoryFees.filter((fee) =>
+                  fee.name?.toLowerCase().includes("tax"),
+                );
 
-    const otherFees = mandatoryFees.filter(
-      (fee) => !fee.name?.toLowerCase().includes("tax")
-    );
+                const otherFees = mandatoryFees.filter(
+                  (fee) => !fee.name?.toLowerCase().includes("tax"),
+                );
 
-    const taxAmount = taxFees.reduce(
-      (sum, fee) => sum + Number(fee.amount || 0),
-      0
-    );
+                const taxAmount = taxFees.reduce(
+                  (sum, fee) => sum + Number(fee.amount || 0),
+                  0,
+                );
 
-    return (
-      <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                return (
+                  <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                    {/* Header */}
+                    <div className="border-b border-gray-100 bg-gray-50 px-5 py-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-base font-semibold text-gray-900">
+                            Price Summary
+                          </h3>
+                        </div>
 
-        {/* Header */}
-        <div className="border-b border-gray-100 bg-gray-50 px-5 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-base font-semibold text-gray-900">
-                Price Summary
-              </h3>
-
-              
-            </div>
-
-            <div className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
-              {pricing.nights}{" "}
-              {pricing.nights === 1 ? "night" : "nights"}
-            </div>
-          </div>
-        </div>
-
-        {/* Price Details */}
-        <div className="space-y-4 px-5 py-5">
-
-          {/* Accommodation */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
-                $
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-gray-800">
-       Rates
-                </p>
-
-                <p className="text-xs text-gray-500">
-                  {pricing.nights}{" "}
-                  {pricing.nights === 1 ? "night" : "nights"}
-                </p>
-              </div>
-            </div>
-
-            <span className="text-sm font-semibold text-gray-900">
-              ${Number(pricing.subtotal || 0).toFixed(2)}
-            </span>
-          </div>
-
-          {/* Other Mandatory Fees */}
-          {otherFees.map((fee, index) => (
-            <div
-              key={`${fee.name}-${index}`}
-              className="flex items-center justify-between"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
-                  {fee.type === "$" ? "$" : "%"}
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-800">
-                    {fee.name}
-                  </p>
-
-                  <p className="text-xs text-gray-500">
-                    Mandatory fee
-                  </p>
-                </div>
-              </div>
-
-              <span className="text-sm font-semibold text-gray-900">
-                ${Number(fee.amount || 0).toFixed(2)}
-              </span>
-            </div>
-          ))}
-
-          {/* Taxes */}
-          {taxFees.length > 0 && (
-            <div className="space-y-3">
-              {taxFees.map((fee, index) => (
-                <div
-                  key={`${fee.name}-${index}`}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
-                      %
+                        <div className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-600">
+                          {pricing.nights}{" "}
+                          {pricing.nights === 1 ? "night" : "nights"}
+                        </div>
+                      </div>
                     </div>
 
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        {fee.name}
-                      </p>
+                    {/* Price Details */}
+                    <div className="space-y-4 px-5 py-5">
+                      {/* Accommodation */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+                            $
+                          </div>
 
-                      <p className="text-xs text-gray-500">
-                        {fee.type === "%"
-                          ? `${fee.value || ""}% tax`
-                          : "Tax"}
+                          <div>
+                            <p className="text-sm font-medium text-gray-800">
+                              {pricing.pricingType === "weekly"
+                                ? "Weekly Rate"
+                                : "Nightly Rate"}
+                            </p>
+
+                            <p className="text-xs text-gray-500">
+                              {pricing.nights}{" "}
+                              {pricing.nights === 1 ? "night" : "nights"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <span className="text-sm font-semibold text-gray-900">
+                          ${Number(pricing.subtotal || 0).toFixed(2)}
+                        </span>
+                      </div>
+
+                      {/* Other Mandatory Fees */}
+                      {otherFees.map((fee, index) => (
+                        <div
+                          key={`${fee.name}-${index}`}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+                              {fee.type === "$" ? "$" : "%"}
+                            </div>
+
+                            <div>
+                              <p className="text-sm font-medium text-gray-800">
+                                {fee.name}
+                              </p>
+
+                              <p className="text-xs text-gray-500">
+                                Mandatory fee
+                              </p>
+                            </div>
+                          </div>
+
+                          <span className="text-sm font-semibold text-gray-900">
+                            ${Number(fee.amount || 0).toFixed(2)}
+                          </span>
+                        </div>
+                      ))}
+
+                      {/* Taxes */}
+                      {taxFees.length > 0 && (
+                        <div className="space-y-3">
+                          {taxFees.map((fee, index) => (
+                            <div
+                              key={`${fee.name}-${index}`}
+                              className="flex items-center justify-between"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 text-gray-600">
+                                  %
+                                </div>
+
+                                <div>
+                                  <p className="text-sm font-medium text-gray-800">
+                                    {fee.name}
+                                  </p>
+
+                                  <p className="text-xs text-gray-500">
+                                    {fee.type === "%"
+                                      ? `${fee.value || ""}% tax`
+                                      : "Tax"}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <span className="text-sm font-semibold text-gray-900">
+                                ${Number(fee.amount || 0).toFixed(2)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Divider */}
+                      <div className="border-t border-dashed border-gray-200" />
+
+                      {/* Total */}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-base font-semibold text-gray-900">
+                            Total
+                          </p>
+
+                          <p className="mt-0.5 text-xs text-gray-500">
+                            Including all mandatory fees
+                          </p>
+                        </div>
+
+                        <span className="text-xl font-bold text-gray-900">
+                          ${Number(pricing.total || 0).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Bottom Note */}
+                    <div className="border-t border-gray-100 bg-gray-50 px-5 py-3">
+                      <p className="text-center text-xs text-gray-500">
+                        Final price may vary depending on applicable fees.
                       </p>
                     </div>
                   </div>
-
-                  <span className="text-sm font-semibold text-gray-900">
-                    ${Number(fee.amount || 0).toFixed(2)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Divider */}
-          <div className="border-t border-dashed border-gray-200" />
-
-          {/* Total */}
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-base font-semibold text-gray-900">
-                  Total
-              </p>
-
-              <p className="mt-0.5 text-xs text-gray-500">
-                Including all mandatory fees
-              </p>
-            </div>
-
-            <span className="text-xl font-bold text-gray-900">
-              ${Number(pricing.total || 0).toFixed(2)}
-            </span>
-          </div>
-        </div>
-
-        {/* Bottom Note */}
-        <div className="border-t border-gray-100 bg-gray-50 px-5 py-3">
-          <p className="text-center text-xs text-gray-500">
-            Final price may vary depending on applicable fees.
-          </p>
-        </div>
-      </div>
-    );
-  })()}
+                );
+              })()}
             {/* <button
             disabled={!checkIn || !checkOut}
             onClick={() => setOpenBooking(true)}
@@ -712,16 +708,16 @@ const PropertyDetail = () => {
               Send Inquiry
             </button>
             <PropertyminiCalendar listingId={listing._id} className="mt-20" />
-           <div className="overflow-hidden">
-  {openInquiry && (
-    <InquiryModal
-      propertyId={id}
-      initialArrival={checkIn}
-      initialDeparture={checkOut}
-      onClose={() => setOpenInquiry(false)}
-    />
-  )}
-</div>
+            <div className="overflow-hidden">
+              {openInquiry && (
+                <InquiryModal
+                  propertyId={id}
+                  initialArrival={checkIn}
+                  initialDeparture={checkOut}
+                  onClose={() => setOpenInquiry(false)}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>

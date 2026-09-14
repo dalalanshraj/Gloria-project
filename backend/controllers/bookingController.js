@@ -93,6 +93,109 @@ const getRateForDate = (rates, date) => {
     return date >= from && date <= to;
   });
 };
+
+const calculateStayPrice = ({
+  rates,
+  deals = [],
+  start,
+  end,
+}) => {
+  let subtotal = 0;
+  let nights = 0;
+
+  // Rate ke hisaab se consecutive nights group karenge
+  let currentSegmentRate = null;
+  let currentSegmentNights = 0;
+
+  const flushSegment = () => {
+    if (!currentSegmentRate || currentSegmentNights <= 0) {
+      return;
+    }
+
+    const weeklyRate = Number(currentSegmentRate.weekly || 0);
+    const nightlyRate = Number(currentSegmentRate.nightly || 0);
+
+    // Agar weekly rate nahi hai to 7 * nightly fallback
+    const effectiveWeeklyRate =
+      weeklyRate > 0 ? weeklyRate : nightlyRate * 7;
+
+    if (currentSegmentNights >= 7 && effectiveWeeklyRate > 0) {
+      const fullWeeks = Math.floor(currentSegmentNights / 7);
+      const remainingNights = currentSegmentNights % 7;
+
+      subtotal += fullWeeks * effectiveWeeklyRate;
+      subtotal += remainingNights * nightlyRate;
+    } else {
+      subtotal += currentSegmentNights * nightlyRate;
+    }
+  };
+
+  for (
+    let d = new Date(start);
+    d < end;
+    d.setDate(d.getDate() + 1)
+  ) {
+    const current = new Date(d);
+    const currentKey = toDateKey(current);
+
+    const rate = rates.find((r) => {
+      const fromKey = toDateKey(r.from);
+      const toKey = toDateKey(r.to);
+
+      return currentKey >= fromKey && currentKey <= toKey;
+    });
+
+    if (!rate) {
+      // Existing behavior ke compatible:
+      // rate nahi hai to segment break hoga
+      flushSegment();
+
+      currentSegmentRate = null;
+      currentSegmentNights = 0;
+
+      nights++;
+      continue;
+    }
+
+    // New rate period start
+    if (
+      !currentSegmentRate ||
+      String(currentSegmentRate._id) !== String(rate._id)
+    ) {
+      flushSegment();
+
+      currentSegmentRate = rate;
+      currentSegmentNights = 0;
+    }
+
+    currentSegmentNights++;
+
+    // Deal check
+    const activeDeal = deals.find((deal) => {
+      const dealStartKey = toDateKey(deal.dealStartDate);
+      const dealEndKey = toDateKey(deal.dealEndDate);
+
+      return (
+        currentKey >= dealStartKey &&
+        currentKey <= dealEndKey
+      );
+    });
+
+    // Deal present hai to weekly calculation ke liye
+    // deal ko later handle karna better hai.
+    // Isliye abhi normal rate calculation use kar rahe hain.
+    void activeDeal;
+
+    nights++;
+  }
+
+  flushSegment();
+
+  return {
+    subtotal,
+    nights,
+  };
+};
 // ----------------------------------------------------------
 // PREVIEW BOOKING
 // ----------------------------------------------------------
@@ -134,18 +237,21 @@ export const previewBooking = async (req, res) => {
       listingId: propertyId,
     });
 
-    let subtotal = 0;
-    let nights = 0;
+    // ============================
+// PRICE CALCULATION
+// ============================
 
+let subtotal = 0;
+let nights = 0;
 
+const stayRates = [];
 
-   for (
+for (
   let d = new Date(start);
   d < end;
   d.setDate(d.getDate() + 1)
 ) {
   const current = new Date(d);
-
   const currentKey = toDateKey(current);
 
   const rate = listing.rates.find((r) => {
@@ -155,24 +261,65 @@ export const previewBooking = async (req, res) => {
     return currentKey >= fromKey && currentKey <= toKey;
   });
 
-  let price = Number(rate?.nightly || 0);
-
-  const activeDeal = deals.find((deal) => {
-    const dealStartKey = toDateKey(deal.dealStartDate);
-    const dealEndKey = toDateKey(deal.dealEndDate);
-
-    return (
-      currentKey >= dealStartKey &&
-      currentKey <= dealEndKey
-    );
-  });
-
-  if (activeDeal) {
-    price = Number(activeDeal.discountedRate || 0);
+  if (!rate) {
+    return res.status(400).json({
+      error: `No rate available for ${currentKey}`,
+    });
   }
 
-  subtotal += price;
+  stayRates.push({
+    date: current,
+    rate,
+  });
+
   nights++;
+}
+
+// ============================
+// WEEKLY / NIGHTLY PRICING
+// ============================
+
+let remainingNights = nights;
+
+let cursor = 0;
+
+while (cursor < stayRates.length) {
+  const rate = stayRates[cursor].rate;
+
+  // Current rate period ke andar kitni consecutive nights hain
+  let segmentLength = 0;
+
+  while (
+    cursor + segmentLength < stayRates.length &&
+    String(stayRates[cursor + segmentLength].rate._id) ===
+      String(rate._id)
+  ) {
+    segmentLength++;
+  }
+
+  const nightlyRate = Number(rate.nightly || 0);
+
+  const weeklyRate =
+    Number(rate.weekly || 0) > 0
+      ? Number(rate.weekly)
+      : nightlyRate * 7;
+
+  // ============================
+  // 7+ NIGHTS = WEEKLY
+  // ============================
+
+  if (segmentLength >= 7) {
+    const fullWeeks = Math.floor(segmentLength / 7);
+    const extraNights = segmentLength % 7;
+
+    subtotal += fullWeeks * weeklyRate;
+    subtotal += extraNights * nightlyRate;
+  } else {
+    // 1-6 nights = nightly
+    subtotal += segmentLength * nightlyRate;
+  }
+
+  cursor += segmentLength;
 }
 
     // ============================
@@ -209,12 +356,16 @@ export const previewBooking = async (req, res) => {
 
     const total = subtotal + extraFeesTotal;
 
-    res.json({
-      nights,
-      subtotal,
-      extraFees: calculatedFees, // ✅ ALL FEES
-      total,
-    });
+   const pricingType =
+  nights >= 7 ? "weekly" : "nightly";
+
+res.json({
+  nights,
+  pricingType,
+  subtotal,
+  extraFees: calculatedFees,
+  total,
+});
 
   } catch (err) {
     console.error("❌ PREVIEW ERROR:", err.message);
