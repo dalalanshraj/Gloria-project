@@ -241,62 +241,277 @@ hover:-translate-y-0.5
       </div>
 
       {/* GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
+     {/* ================= AMENITIES GRID ================= */}
 
-        {amenitiesData.map((section) => (
-          <div
-            key={section.title}
-            className="bg-white rounded-xl border shadow-sm hover:shadow-md transition"
+<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-start">
+  {amenitiesData.map((section) => {
+    const selectedCount = section.options.filter((option) =>
+      section.type === "radio"
+        ? !!amenities[`${section.name}:${option}`]
+        : !!amenities[option]
+    ).length;
+
+    const allSelected =
+      section.type === "checkbox" &&
+      section.options.length > 0 &&
+      section.options.every((option) => !!amenities[option]);
+
+    return (
+      <div
+        key={section.name}
+        className="
+          bg-white
+          rounded-2xl
+          border border-gray-200
+          overflow-hidden
+          shadow-sm
+          hover:shadow-md
+          transition-all
+          duration-200
+        "
+      >
+        {/* ================= HEADER ================= */}
+
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            gap-3
+            px-5
+            py-4
+            bg-gradient-to-r
+            from-gray-50
+            to-white
+            border-b
+            border-gray-200
+          "
+        >
+          <h3 className="text-[15px] font-semibold text-gray-800">
+            {section.name}
+          </h3>
+
+          {selectedCount > 0 && (
+            <span
+              className="
+                shrink-0
+                text-[11px]
+                font-semibold
+                text-blue-700
+                bg-blue-50
+                border
+                border-blue-100
+                px-2.5
+                py-1
+                rounded-full
+              "
+            >
+              {selectedCount} selected
+            </span>
+          )}
+        </div>
+
+        {/* ================= SELECT ALL ================= */}
+
+        {section.type === "checkbox" && (
+          <label
+            className="
+              mx-4
+              mt-4
+              flex
+              items-center
+              gap-3
+              px-4
+              py-2.5
+              rounded-xl
+              border
+              border-blue-100
+              bg-blue-50/60
+              cursor-pointer
+              select-none
+              hover:bg-blue-50
+              transition-all
+              duration-200
+            "
           >
-            {/* HEADER */}
-            <div className="px-4 py-3 font-semibold text-gray-700 bg-gray-50 border-b rounded-t-xl">
-              {section.title}
-            </div>
+            <input
+              type="checkbox"
+              checked={allSelected}
+              onChange={(e) =>
+                checkAll(section.options, e.target.checked)
+              }
+              className="
+                w-4
+                h-4
+                accent-blue-600
+                cursor-pointer
+              "
+            />
 
-            {/* CHECK ALL */}
-            {section.type === "checkbox" && (
-              <label className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-sm">
-                <input
-                  type="checkbox"
-                  onChange={(e) =>
-                    checkAll(section.options, e.target.checked)
+            <span className="text-sm font-medium text-blue-700">
+              Select all
+            </span>
+          </label>
+        )}
+
+        {/* ================= OPTIONS ================= */}
+
+        <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {section.options.map((option) => {
+            const isChecked =
+              section.type === "radio"
+                ? !!amenities[`${section.name}:${option}`]
+                : !!amenities[option];
+
+            return (
+              <label
+                key={option}
+                className={`
+                  group
+                  relative
+                  flex
+                  items-center
+                  gap-3
+                  min-h-[56px]
+                  px-3.5
+                  py-3
+                  rounded-xl
+                  border
+                  cursor-pointer
+                  select-none
+                  transition-all
+                  duration-200
+                  ease-out
+
+                  ${
+                    isChecked
+                      ? `
+                        border-blue-500
+                        bg-blue-50
+                        shadow-sm
+                        shadow-blue-100
+                      `
+                      : `
+                        border-gray-200
+                        bg-white
+                        hover:border-blue-300
+                        hover:bg-blue-50/40
+                        hover:shadow-sm
+                      `
                   }
+                `}
+              >
+                {/* Hidden Input */}
+
+                <input
+                  type={section.type}
+                  name={section.name}
+                  checked={isChecked}
+                  onChange={() =>
+                    section.type === "radio"
+                      ? selectRadio(section.name, option)
+                      : toggleCheckbox(option)
+                  }
+                  className="sr-only"
                 />
-                Select all
-              </label>
-            )}
 
-            {/* OPTIONS */}
-            <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {section.options.map((option) => (
-                <label
-                  key={option}
-                  className="flex items-center gap-2 p-2 rounded hover:bg-gray-50 cursor-pointer"
+                {/* Custom Checkbox / Radio */}
+
+                <span
+                  className={`
+                    flex
+                    items-center
+                    justify-center
+                    shrink-0
+                    w-5
+                    h-5
+                    border-2
+                    transition-all
+                    duration-200
+
+                    ${
+                      section.type === "radio"
+                        ? "rounded-full"
+                        : "rounded-md"
+                    }
+
+                    ${
+                      isChecked
+                        ? `
+                          bg-blue-600
+                          border-blue-600
+                          scale-105
+                        `
+                        : `
+                          bg-white
+                          border-gray-300
+                          group-hover:border-blue-400
+                        `
+                    }
+                  `}
                 >
-                  <input
-                    type={section.type}
-                    name={section.name}
-                    checked={
-                      section.type === "radio"
-                        ? !!amenities[`${section.name}:${option}`]
-                        : !!amenities[option]
-                    }
-                    onChange={() =>
-                      section.type === "radio"
-                        ? selectRadio(section.name, option)
-                        : toggleCheckbox(option)
-                    }
-                  />
-                  <span className="text-sm text-gray-700">
-                    {option}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </div>
-        ))}
+                  {isChecked &&
+                    (section.type === "radio" ? (
+                      <span className="w-2 h-2 bg-white rounded-full" />
+                    ) : (
+                      <svg
+                        className="w-3.5 h-3.5 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    ))}
+                </span>
 
+                {/* Option Text */}
+
+                <span
+                  className={`
+                    text-sm
+                    leading-5
+                    font-medium
+                    transition-colors
+                    duration-200
+                    ${
+                      isChecked
+                        ? "text-blue-700"
+                        : "text-gray-700 group-hover:text-gray-900"
+                    }
+                  `}
+                >
+                  {option}
+                </span>
+
+                {/* Selected Indicator */}
+
+                {isChecked && (
+                  <span
+                    className="
+                      absolute
+                      right-2
+                      top-2
+                      w-1.5
+                      h-1.5
+                      rounded-full
+                      bg-blue-500
+                    "
+                  />
+                )}
+              </label>
+            );
+          })}
+        </div>
       </div>
+    );
+  })}
+</div>
     </div>
   );
 }

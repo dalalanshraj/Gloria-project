@@ -132,14 +132,49 @@ const PropertyDetail = () => {
     listing.reviews?.filter((r) => r.published === true) || [];
 
   // ================= YOUTUBE =================
-  const getYoutubeEmbed = (url) => {
-    if (!url) return null;
-    if (url.includes("embed")) return url;
-    if (url.includes("watch?v=")) return url.replace("watch?v=", "embed/");
-    if (url.includes("youtu.be/"))
-      return `https://www.youtube.com/embed/${url.split("youtu.be/")[1]}`;
+
+const getYoutubeEmbed = (url) => {
+  if (!url) return null;
+
+  try {
+    const parsedUrl = new URL(url);
+
+    // Already embed URL
+    if (parsedUrl.pathname.startsWith("/embed/")) {
+      return url;
+    }
+
+    // YouTube Shorts
+    if (parsedUrl.pathname.startsWith("/shorts/")) {
+      const videoId = parsedUrl.pathname.split("/shorts/")[1]?.split("/")[0];
+
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}`;
+      }
+    }
+
+    // youtu.be/VIDEO_ID
+    if (parsedUrl.hostname === "youtu.be") {
+      const videoId = parsedUrl.pathname.slice(1).split("/")[0];
+
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}`;
+      }
+    }
+
+    // youtube.com/watch?v=VIDEO_ID
+    if (parsedUrl.searchParams.get("v")) {
+      const videoId = parsedUrl.searchParams.get("v");
+
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+
     return null;
-  };
+  } catch (error) {
+    console.error("Invalid YouTube URL:", error);
+    return null;
+  }
+};
 
   // ================= MAP =================
   const getMapEmbedUrl = (lat, lng) => {
