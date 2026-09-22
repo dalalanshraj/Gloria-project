@@ -8,7 +8,6 @@ import {
   FaEnvelope,
   FaChevronRight,
 } from "react-icons/fa";
-
 export default function ListingCard({
   listing,
   onToggleStatus,
@@ -530,6 +529,10 @@ export default function ListingCard({
               <QuickLink
                 to={`/admin/listings/${listing._id}?tab=Activities`}
                 label="Activities"
+              />
+               <QuickLink
+                to={`/admin/listings/${listing._id}?tab=Calendar`}
+                label="Calendar"
               />
 
               <QuickLink

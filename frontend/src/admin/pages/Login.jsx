@@ -41,7 +41,7 @@ const Login = () => {
       // Redirect
       navigate("/admin/dashboard");
     } catch (err) {
-      console.log(err);
+      console.log(err);e
 
       setError(
         err.response?.data?.message || "Invalid email or password"
